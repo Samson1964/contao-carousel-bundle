@@ -1,0 +1,10 @@
+# Dienste des carouFredSel-Karussells
+#
+# Inhaltselemente und Frontend-Module werden nicht als Dienste geführt:
+# Contao erzeugt die Klassen aus $GLOBALS['TL_CTE'] bzw. $GLOBALS['FE_MOD']
+# selbst, ohne den Container zu fragen. Die Vorgaben stehen trotzdem hier,
+# damit künftige Dienste (etwa Controller) sie erben.
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true

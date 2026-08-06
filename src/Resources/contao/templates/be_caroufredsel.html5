@@ -1,0 +1,12 @@
+
+<?php if ($this->title): ?>
+<h1><?php echo $this->title; ?></h1>
+<?php endif; ?>
+
+<div class="<?php echo $this->class; ?> block"<?php echo $this->cssID; ?>>
+	<div class="caroufredsel_skin">
+		<div class="caroufredsel">
+			<?php echo $this->images; ?>
+		</div>
+	</div>
+</div>
