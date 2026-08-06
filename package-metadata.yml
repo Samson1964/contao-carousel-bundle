@@ -6,10 +6,17 @@ de:
     title: carouFredSel-Bildkarussell
     description: >
         Bildkarussell auf Basis des jQuery-Plugins carouFredSel: Galerie mit
-        synchronisierter Vorschauleiste, Newsticker, bildschirmfüllende
-        Hintergrund-Slideshow und ein Wrapper, der beliebige Inhaltselemente
-        in ein Karussell verpackt. Portierung der Contao-3-Erweiterung
-        dk_caroufredsel von Dirk Klemmt für Contao 4.13 und Contao 5.
+        synchronisierter Vorschauleiste, Newsticker, Hintergrund-Slideshow im
+        Vollbild und ein Wrapper, der beliebige Inhaltselemente in ein
+        Karussell verpackt.
+
+        Die Karussell-Einstellungen (Abspielverhalten, Übergänge, Größen,
+        Navigation, Paginierung, Touch- und Mausrad-Steuerung) werden zentral
+        gepflegt und von beliebig vielen Elementen und Modulen
+        wiederverwendet.
+
+        Portierung der Contao-3-Erweiterung von Dirk Klemmt für Contao 4.13
+        und Contao 5.
     keywords:
         - Karussell
         - Slider
@@ -22,10 +29,16 @@ en:
     title: carouFredSel image carousel
     description: >
         Image carousel based on the jQuery plugin carouFredSel: gallery with
-        a synchronised thumbnail bar, news ticker, full-screen background
-        slideshow and a wrapper that turns arbitrary content elements into a
-        carousel. Port of the Contao 3 extension dk_caroufredsel by Dirk
-        Klemmt for Contao 4.13 and Contao 5.
+        a synchronized thumbnail bar, news ticker, full-screen background
+        slideshow and a wrapper that turns any content elements into a
+        carousel.
+
+        The carousel settings (playback, transitions, sizes, navigation,
+        pagination, touch and mouse wheel control) are managed centrally and
+        can be reused by any number of elements and modules.
+
+        Port of the Contao 3 extension by Dirk Klemmt for Contao 4.13 and
+        Contao 5.
     keywords:
         - carousel
         - slider
