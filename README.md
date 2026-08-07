@@ -1,6 +1,8 @@
-# contao-caroufredsel-bundle
+# contao-carousel-bundle
 
 Bildkarussell für **Contao 4.13 und Contao 5** auf Basis von **Swiper** ([contao-components/swiper](https://packagist.org/packages/contao-components/swiper)), das auch der Contao-Core verwendet. Das Bundle ist die Portierung der Contao-3-Erweiterung [dk_caroufredsel](https://github.com/dklemmt/contao_dk_caroufredsel) von Dirk Klemmt: Die Datenbanktabellen, Element- und Modultypen bleiben unverändert, nur die Anzeige-Engine ist seit Version 3.0.0 Swiper statt des aufgegebenen jQuery-Plugins carouFredSel. jQuery wird nicht mehr benötigt.
+
+Bis Version 3.0.0 hieß das Paket `schachbulle/contao-caroufredsel-bundle`; mit dem Wechsel auf Swiper wurde es in `schachbulle/contao-carousel-bundle` umbenannt. Die internen Kennungen (`tl_dk_caroufredsel`, `caroufredsel_*`-Typen, Template- und CSS-Namen) behalten bewusst den alten Namen, damit bestehende Daten weiterlaufen.
 
 ## Funktionen
 
@@ -21,7 +23,7 @@ Bildkarussell für **Contao 4.13 und Contao 5** auf Basis von **Swiper** ([conta
 ## Installation
 
 ```bash
-composer require schachbulle/contao-caroufredsel-bundle
+composer require schachbulle/contao-carousel-bundle
 ```
 
 Anschließend im Install-Tool bzw. über `contao:migrate` die Datenbank aktualisieren. Swiper wird als Composer-Abhängigkeit (`contao-components/swiper`) automatisch mitinstalliert.

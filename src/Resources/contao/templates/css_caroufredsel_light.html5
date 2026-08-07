@@ -88,51 +88,51 @@
 #caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_prev {
 <?php if ($this->direction == 'up' || $this->direction == 'down'): ?>
 	top: 30px;
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_up.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_up.svg);
 <?php else: ?>
 	left: 30px;
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_left.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_left.svg);
 <?php endif; ?>
 }
 #caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_prev:hover {
 <?php if ($this->direction == 'up' || $this->direction == 'down'): ?>
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_up_hover.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_up_hover.svg);
 <?php else: ?>
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_left_hover.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_left_hover.svg);
 <?php endif; ?>
 }
 /* Vorwärts */
 #caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_next {
 <?php if ($this->direction == 'up' || $this->direction == 'down'): ?>
 	bottom: 30px;
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_down.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_down.svg);
 <?php else: ?>
 	right: 30px;
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_right.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_right.svg);
 <?php endif; ?>
 }
 #caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_next:hover {
 <?php if ($this->direction == 'up' || $this->direction == 'down'): ?>
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_down_hover.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_down_hover.svg);
 <?php else: ?>
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_right_hover.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_right_hover.svg);
 <?php endif; ?>
 }
 <?php if ($this->autoButton): ?>
 /* Play/Pause-Schalter */
 #caroufredsel_skin_<?php echo $this->id; ?>:hover a.caroufredsel_button { opacity: 1; }
 #caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_button { top: 50%; margin-top: -<?php echo $buttonMarginTop; ?>px; left: 50%; margin-left: -<?php echo $buttonMarginLeft; ?>px; }
-#caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_button { background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_pause.svg); }
-#caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_button:hover { background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_pause_hover.svg); }
-#caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_button.paused { background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_play.svg); }
-#caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_button.paused:hover { background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_play_hover.svg); }
+#caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_button { background-image: url(bundles/contaocarousel/skins/light/images/icon_pause.svg); }
+#caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_button:hover { background-image: url(bundles/contaocarousel/skins/light/images/icon_pause_hover.svg); }
+#caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_button.paused { background-image: url(bundles/contaocarousel/skins/light/images/icon_play.svg); }
+#caroufredsel_skin_<?php echo $this->id; ?> a.caroufredsel_button.paused:hover { background-image: url(bundles/contaocarousel/skins/light/images/icon_play_hover.svg); }
 <?php endif; ?>
 <?php if ($this->pagination): ?>
 /* Seitenzahlen */
 #caroufredsel_skin_<?php echo $this->id; ?> .caroufredsel_pagi { text-align: center; position: relative; top: -<?php echo $paginationPositionTop; ?>px; height: 0; z-index: 10; }
 #caroufredsel_skin_<?php echo $this->id; ?> .caroufredsel_pagi a {
 	text-indent: -9999em;
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_page.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_page.svg);
 	background-size: <?php echo $paginationSize; ?>px;
 	background-repeat: no-repeat;
 	background-position: center;
@@ -142,7 +142,7 @@
 	padding: 0 3px;
 	opacity: 1;
 }
-#caroufredsel_skin_<?php echo $this->id; ?> .caroufredsel_pagi a.selected { background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_page_hover.svg); cursor: default; }
+#caroufredsel_skin_<?php echo $this->id; ?> .caroufredsel_pagi a.selected { background-image: url(bundles/contaocarousel/skins/light/images/icon_page_hover.svg); cursor: default; }
 <?php endif; ?>
 <?php endif; ?>
 <?php if ($this->autoProgress == 'pie'): ?>
@@ -235,34 +235,34 @@
 #caroufredsel_thumbnails_skin_<?php echo $this->id; ?> a.caroufredsel_thumbnails_prev {
 <?php if ($this->thumbnailsPosition == 'left' || $this->thumbnailsPosition == 'right'): ?>
 	top: 20px;
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_up.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_up.svg);
 <?php else: ?>
 	left: 20px;
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_left.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_left.svg);
 <?php endif; ?>
 }
 #caroufredsel_thumbnails_skin_<?php echo $this->id; ?> a.caroufredsel_thumbnails_prev:hover {
 <?php if ($this->thumbnailsPosition == 'left' || $this->thumbnailsPosition == 'right'): ?>
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_up_hover.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_up_hover.svg);
 <?php else: ?>
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_left_hover.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_left_hover.svg);
 <?php endif; ?>
 }
 /* Vorwärts */
 #caroufredsel_thumbnails_skin_<?php echo $this->id; ?> a.caroufredsel_thumbnails_next {
 <?php if ($this->thumbnailsPosition == 'left' || $this->thumbnailsPosition == 'right'): ?>
 	bottom: 20px;
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_down.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_down.svg);
 <?php else: ?>
 	right: 20px;
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_right.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_right.svg);
 <?php endif; ?>
 }
 #caroufredsel_thumbnails_skin_<?php echo $this->id; ?> a.caroufredsel_thumbnails_next:hover {
 <?php if ($this->thumbnailsPosition == 'left' || $this->thumbnailsPosition == 'right'): ?>
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_down_hover.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_down_hover.svg);
 <?php else: ?>
-	background-image: url(bundles/contaocaroufredsel/skins/light/images/icon_arrow_right_hover.svg);
+	background-image: url(bundles/contaocarousel/skins/light/images/icon_arrow_right_hover.svg);
 <?php endif; ?>
 }
 <?php endif; ?>

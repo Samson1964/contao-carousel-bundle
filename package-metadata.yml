@@ -3,7 +3,7 @@
 # Der englische Block wird beim Abgleich ergaenzt, falls er fehlt.
 
 de:
-    title: carouFredSel-Bildkarussell
+    title: Bildkarussell (Carousel)
     description: >
         Bildkarussell auf Swiper-Basis: Galerie mit synchronisierter
         Vorschauleiste, Newsticker, Hintergrund-Slideshow im Vollbild und
@@ -27,7 +27,7 @@ de:
         - Swiper
 
 en:
-    title: carouFredSel image carousel
+    title: Image carousel
     description: >
         Image carousel based on Swiper: gallery with a synchronized
         thumbnail bar, news ticker, full-screen background slideshow and a

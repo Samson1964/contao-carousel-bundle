@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license   LGPL-3.0-or-later
  */
 
-namespace Schachbulle\ContaoCaroufredselBundle\DependencyInjection;
+namespace Schachbulle\ContaoCarouselBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 /**
  * Bindet die Dienstbeschreibung der Erweiterung in den Container ein.
  */
-class ContaoCaroufredselExtension extends Extension
+class ContaoCarouselExtension extends Extension
 {
 	/**
 	 * Lädt src/Resources/config/services.yaml in den Container.

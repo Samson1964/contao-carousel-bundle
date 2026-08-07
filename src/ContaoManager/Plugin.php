@@ -10,13 +10,13 @@ declare(strict_types=1);
  * @license   LGPL-3.0-or-later
  */
 
-namespace Schachbulle\ContaoCaroufredselBundle\ContaoManager;
+namespace Schachbulle\ContaoCarouselBundle\ContaoManager;
 
 use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
-use Schachbulle\ContaoCaroufredselBundle\ContaoCaroufredselBundle;
+use Schachbulle\ContaoCarouselBundle\ContaoCarouselBundle;
 
 /**
  * Meldet die Erweiterung beim Contao Manager an.
@@ -41,7 +41,7 @@ class Plugin implements BundlePluginInterface
 	public function getBundles(ParserInterface $parser): array
 	{
 		return [
-			BundleConfig::create(ContaoCaroufredselBundle::class)
+			BundleConfig::create(ContaoCarouselBundle::class)
 				->setLoadAfter([ContaoCoreBundle::class, 'Contao\NewsBundle\ContaoNewsBundle']),
 		];
 	}

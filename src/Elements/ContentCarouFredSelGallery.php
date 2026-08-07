@@ -10,13 +10,13 @@ declare(strict_types=1);
  * @license   LGPL-3.0-or-later
  */
 
-namespace Schachbulle\ContaoCaroufredselBundle\Elements;
+namespace Schachbulle\ContaoCarouselBundle\Elements;
 
 use Contao\BackendTemplate;
 use Contao\ContentElement;
 use Contao\FrontendTemplate;
-use Schachbulle\ContaoCaroufredselBundle\Classes\CarouFredSel;
-use Schachbulle\ContaoCaroufredselBundle\Classes\GalleryTrait;
+use Schachbulle\ContaoCarouselBundle\Classes\CarouFredSel;
+use Schachbulle\ContaoCarouselBundle\Classes\GalleryTrait;
 
 /**
  * Inhaltselement "caroufredsel_gallery".
@@ -148,7 +148,7 @@ class ContentCarouFredSelGallery extends ContentElement
 			$this->Template->images = $objTemplate->parse();
 
 			// CSS des Karussells auch im Backend einbinden
-			$GLOBALS['TL_CSS'][] = 'bundles/contaocaroufredsel/css/caroufredsel.css';
+			$GLOBALS['TL_CSS'][] = 'bundles/contaocarousel/css/caroufredsel.css';
 		}
 	}
 }

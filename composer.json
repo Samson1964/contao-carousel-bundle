@@ -1,5 +1,5 @@
 {
-    "name": "schachbulle/contao-caroufredsel-bundle",
+    "name": "schachbulle/contao-carousel-bundle",
     "type": "contao-bundle",
     "description": "Bildkarussell auf Swiper-Basis (Portierung der Contao-3-Erweiterung dk_caroufredsel): Galerie mit Vorschauleiste, Newsticker, Hintergrund-Slideshow und Karussell für beliebige Inhaltselemente.",
     "keywords": [
@@ -12,7 +12,7 @@
         "newsticker",
         "caroufredsel"
     ],
-    "homepage": "https://github.com/Samson1964/contao-caroufredsel-bundle",
+    "homepage": "https://github.com/Samson1964/contao-carousel-bundle",
     "license": "LGPL-3.0-or-later",
     "authors": [
         {
@@ -47,15 +47,15 @@
         "contao/news-bundle": "Wird für das Frontend-Modul \"carouFredSel-Newsticker\" benötigt"
     },
     "extra": {
-        "contao-manager-plugin": "Schachbulle\\ContaoCaroufredselBundle\\ContaoManager\\Plugin"
+        "contao-manager-plugin": "Schachbulle\\ContaoCarouselBundle\\ContaoManager\\Plugin"
     },
     "autoload": {
         "psr-4": {
-            "Schachbulle\\ContaoCaroufredselBundle\\": "src/"
+            "Schachbulle\\ContaoCarouselBundle\\": "src/"
         }
     },
     "support": {
-        "issues": "https://github.com/Samson1964/contao-caroufredsel-bundle/issues",
-        "source": "https://github.com/Samson1964/contao-caroufredsel-bundle"
+        "issues": "https://github.com/Samson1964/contao-carousel-bundle/issues",
+        "source": "https://github.com/Samson1964/contao-carousel-bundle"
     }
 }

@@ -10,12 +10,12 @@ declare(strict_types=1);
  * @license   LGPL-3.0-or-later
  */
 
-namespace Schachbulle\ContaoCaroufredselBundle\Classes;
+namespace Schachbulle\ContaoCarouselBundle\Classes;
 
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
-use Schachbulle\ContaoCaroufredselBundle\Models\CarouFredSelModel;
+use Schachbulle\ContaoCarouselBundle\Models\CarouFredSelModel;
 
 /**
  * Zentrale Helferklasse des Karussells.
@@ -425,10 +425,10 @@ class CarouFredSel
 		// ... Swiper-Bibliothek (contao-components/swiper) und Initialisierer
 		$GLOBALS['TL_CSS'][] = 'assets/swiper/css/swiper-bundle.min.css|static';
 		$GLOBALS['TL_JAVASCRIPT'][] = 'assets/swiper/js/swiper-bundle.min.js|static';
-		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/caroufredsel.js|static';
+		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocarousel/js/caroufredsel.js|static';
 
 		// ... globale CSS-Datei des Karussells
-		$GLOBALS['TL_CSS'][] = 'bundles/contaocaroufredsel/css/caroufredsel.css||static';
+		$GLOBALS['TL_CSS'][] = 'bundles/contaocarousel/css/caroufredsel.css||static';
 
 		// ... elementabhängiger CSS-Block im Seitenkopf
 		$GLOBALS['TL_HEAD'][] = $objTemplateCss->parse();

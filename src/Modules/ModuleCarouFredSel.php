@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license   LGPL-3.0-or-later
  */
 
-namespace Schachbulle\ContaoCaroufredselBundle\Modules;
+namespace Schachbulle\ContaoCarouselBundle\Modules;
 
 use Contao\BackendTemplate;
 use Contao\ContentModel;
@@ -18,7 +18,7 @@ use Contao\FrontendTemplate;
 use Contao\Module;
 use Contao\StringUtil;
 use Contao\System;
-use Schachbulle\ContaoCaroufredselBundle\Classes\CarouFredSel;
+use Schachbulle\ContaoCarouselBundle\Classes\CarouFredSel;
 
 /**
  * Frontend-Modul "caroufredsel".

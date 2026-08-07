@@ -10,15 +10,15 @@ declare(strict_types=1);
  * @license   LGPL-3.0-or-later
  */
 
-use Schachbulle\ContaoCaroufredselBundle\Elements\ContentCarouFredSelBackground;
-use Schachbulle\ContaoCaroufredselBundle\Elements\ContentCarouFredSelGallery;
-use Schachbulle\ContaoCaroufredselBundle\Elements\ContentCarouFredSelStart;
-use Schachbulle\ContaoCaroufredselBundle\Elements\ContentCarouFredSelStop;
-use Schachbulle\ContaoCaroufredselBundle\Models\CarouFredSelModel;
-use Schachbulle\ContaoCaroufredselBundle\Modules\ModuleCarouFredSel;
-use Schachbulle\ContaoCaroufredselBundle\Modules\ModuleCarouFredSelBackground;
-use Schachbulle\ContaoCaroufredselBundle\Modules\ModuleCarouFredSelGallery;
-use Schachbulle\ContaoCaroufredselBundle\Modules\ModuleCarouFredSelTicker;
+use Schachbulle\ContaoCarouselBundle\Elements\ContentCarouFredSelBackground;
+use Schachbulle\ContaoCarouselBundle\Elements\ContentCarouFredSelGallery;
+use Schachbulle\ContaoCarouselBundle\Elements\ContentCarouFredSelStart;
+use Schachbulle\ContaoCarouselBundle\Elements\ContentCarouFredSelStop;
+use Schachbulle\ContaoCarouselBundle\Models\CarouFredSelModel;
+use Schachbulle\ContaoCarouselBundle\Modules\ModuleCarouFredSel;
+use Schachbulle\ContaoCarouselBundle\Modules\ModuleCarouFredSelBackground;
+use Schachbulle\ContaoCarouselBundle\Modules\ModuleCarouFredSelGallery;
+use Schachbulle\ContaoCarouselBundle\Modules\ModuleCarouFredSelTicker;
 
 /**
  * Backend-Modul im Menü "Inhalte": verwaltet die Karussell-Konfigurationen
@@ -27,7 +27,7 @@ use Schachbulle\ContaoCaroufredselBundle\Modules\ModuleCarouFredSelTicker;
 $GLOBALS['BE_MOD']['content']['caroufredsel'] = array
 (
 	'tables' => array('tl_dk_caroufredsel', 'tl_content'),
-	'icon'   => 'bundles/contaocaroufredsel/images/caroufredsel.png',
+	'icon'   => 'bundles/contaocarousel/images/caroufredsel.png',
 );
 
 /**

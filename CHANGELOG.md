@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 3.1.0 (2026-08-07)
+
+* Change: Paket von `schachbulle/contao-caroufredsel-bundle` in `schachbulle/contao-carousel-bundle` umbenannt (samt GitHub-Repository, PHP-Namespace `Schachbulle\ContaoCarouselBundle` und Asset-Pfad `bundles/contaocarousel/`), weil die Anzeige-Engine seit Version 3.0.0 Swiper statt carouFredSel ist. Die internen Kennungen (Tabelle `tl_dk_caroufredsel`, `caroufredsel_*`-Typen, Template- und CSS-Namen) bleiben als Migrationsbrücke unverändert.
+
 ## Version 3.0.0 (2026-08-07)
 
 * Change: Anzeige-Engine von jQuery.carouFredSel auf Swiper (`contao-components/swiper`, wie im Contao-Core) umgestellt; jQuery wird nicht mehr benötigt. Die Datenbanktabellen, Element- und Modultypen bleiben unverändert, die gespeicherten Einstellungen werden auf Swiper-Parameter abgebildet (Tabelle in der README).
@@ -16,7 +20,7 @@
 * Change: Bilderzeugung der Galerie vom entfernten `Controller::addImageToTemplate()` auf den FigureBuilder (`contao.image.studio`) umgestellt; Metadaten, Lightbox und Bildgrößen kommen jetzt aus dem Studio.
 * Change: Backend-Erkennung von `TL_MODE` auf den ScopeMatcher umgestellt; `deserialize()`/`specialchars()` durch `StringUtil`, `$GLOBALS['TL_CONFIG']` durch `Config::get()`, `REQUEST_TOKEN` durch den CSRF-Dienst ersetzt (alles in Contao 5 entfernt).
 * Change: Dateibaum-Feld sortiert über `isSortable` direkt in `dk_cfsMultiSRC`; das frühere `orderSRC`-Feld entfällt (seit Contao 4.10 nicht mehr vorhanden). Individuelle Sortierungen müssen einmal neu gespeichert werden.
-* Change: Doppelte Galerie-Logik von Inhaltselement und Modul in einem gemeinsamen Trait zusammengeführt; Assets liegen jetzt unter `bundles/contaocaroufredsel/`.
+* Change: Doppelte Galerie-Logik von Inhaltselement und Modul in einem gemeinsamen Trait zusammengeführt; Assets liegen jetzt unter `bundles/contaocarousel/`.
 * Change: DCA modernisiert (`DC_Table::class`, SVG-Icons, Bildgrößen aus `contao.image.image_sizes` statt `TL_CROP`); die Paletten-Felder `space` und `guests` entfallen.
 * Fix: Hintergrund-Slideshow setzte die Elementhöhe fälschlich auf `width: "variable"` statt `height: "variable"`.
 * Fix: `runonce.php` der Contao-3-Fassung entfernt; die dort behandelten Migrationsfälle (vor Version 1.2) sind mit Version 1.3.2 abgeschlossen.

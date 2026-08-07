@@ -10,14 +10,14 @@ declare(strict_types=1);
  * @license   LGPL-3.0-or-later
  */
 
-namespace Schachbulle\ContaoCaroufredselBundle\Elements;
+namespace Schachbulle\ContaoCarouselBundle\Elements;
 
 use Contao\BackendTemplate;
 use Contao\ContentElement;
 use Contao\Database;
 use Contao\FrontendTemplate;
 use Contao\System;
-use Schachbulle\ContaoCaroufredselBundle\Classes\CarouFredSel;
+use Schachbulle\ContaoCarouselBundle\Classes\CarouFredSel;
 
 /**
  * Inhaltselement "caroufredsel_stop" (schließender Teil des Wrappers).

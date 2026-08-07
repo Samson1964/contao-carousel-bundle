@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license   LGPL-3.0-or-later
  */
 
-namespace Schachbulle\ContaoCaroufredselBundle;
+namespace Schachbulle\ContaoCarouselBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -21,6 +21,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  * die Ressourcen unter src/Resources/contao (Konfiguration, DCA, Sprachdateien,
  * Templates) und src/Resources/public (CSS, JavaScript, Skin-Grafiken).
  */
-class ContaoCaroufredselBundle extends Bundle
+class ContaoCarouselBundle extends Bundle
 {
 }
