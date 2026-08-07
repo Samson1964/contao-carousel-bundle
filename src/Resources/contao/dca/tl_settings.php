@@ -10,19 +10,25 @@ declare(strict_types=1);
  * @license   LGPL-3.0-or-later
  */
 
-// In Contao 5 gibt es das Einstellungen-Modul (tl_settings) nicht mehr; die
-// Werte werden dort von Hand in config/parameters bzw. localconfig.php
-// gepflegt (siehe README). Der Guard verhindert Schreibzugriffe auf eine
-// nicht vorhandene DCA-Definition.
+// Seit der Swiper-Umstellung (Version 3.0.0) gibt es nur noch eine
+// Einstellung: den Nutzungsmodus. Die früheren jQuery-Optionen
+// (dk_cfsTriggerMode, dk_cfsOnWindowResize, dk_cfsImageLoader,
+// dk_cfsTransition, dk_cfsDebug) sind wirkungslos und entfallen.
+//
+// In Contao 5 gibt es das Einstellungen-Modul (tl_settings) nicht mehr; der
+// Wert wird dort von Hand in system/config/localconfig.php gepflegt (siehe
+// README). Der Guard verhindert Schreibzugriffe auf eine nicht vorhandene
+// DCA-Definition.
 if (isset($GLOBALS['TL_DCA']['tl_settings']['palettes']['default']))
 {
 	/**
 	 * Palette um die carouFredSel-Einstellungen ergänzen
 	 */
-	$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{caroufredsel_legend:hide},dk_cfsUsageMode,dk_cfsTriggerMode,dk_cfsOnWindowResize,dk_cfsImageLoader,dk_cfsTransition,dk_cfsDebug';
+	$GLOBALS['TL_DCA']['tl_settings']['palettes']['default'] .= ';{caroufredsel_legend:hide},dk_cfsUsageMode';
 
 	/**
-	 * Felder der carouFredSel-Einstellungen
+	 * Nutzungsmodus: 'basic' zeigt nur die gängigsten Karussell-Optionen,
+	 * 'advanced' alle
 	 */
 	$GLOBALS['TL_DCA']['tl_settings']['fields']['dk_cfsUsageMode'] = array
 	(
@@ -31,45 +37,5 @@ if (isset($GLOBALS['TL_DCA']['tl_settings']['palettes']['default']))
 		'options'			=> array('basic', 'advanced'),
 		'reference'			=> &$GLOBALS['TL_LANG']['tl_settings']['dk_cfsUsageMode'],
 		'eval'				=> array('helpwizard' => true)
-	);
-
-	$GLOBALS['TL_DCA']['tl_settings']['fields']['dk_cfsTriggerMode'] = array
-	(
-		'label'				=> &$GLOBALS['TL_LANG']['tl_settings']['dk_cfsTriggerMode'],
-		'inputType'			=> 'select',
-		'options'			=> array('onDocumentReady', 'onWindowLoad', 'readyLoad'),
-		'default'			=> 'readyLoad',
-		'reference'			=> &$GLOBALS['TL_LANG']['tl_settings']['dk_cfsTriggerMode'],
-		'eval'				=> array('helpwizard' => true, 'tl_class' => 'w50')
-	);
-
-	$GLOBALS['TL_DCA']['tl_settings']['fields']['dk_cfsOnWindowResize'] = array
-	(
-		'label'				=> &$GLOBALS['TL_LANG']['tl_settings']['dk_cfsOnWindowResize'],
-		'inputType'			=> 'select',
-		'options'			=> array('throttle', 'debounce'),
-		'reference'			=> &$GLOBALS['TL_LANG']['tl_settings']['dk_cfsOnWindowResize'],
-		'eval'				=> array('helpwizard' => true, 'includeBlankOption' => true, 'tl_class' => 'w50')
-	);
-
-	$GLOBALS['TL_DCA']['tl_settings']['fields']['dk_cfsImageLoader'] = array
-	(
-		'label'				=> &$GLOBALS['TL_LANG']['tl_settings']['dk_cfsImageLoader'],
-		'inputType'			=> 'checkbox',
-		'eval'				=> array('tl_class' => 'w50')
-	);
-
-	$GLOBALS['TL_DCA']['tl_settings']['fields']['dk_cfsTransition'] = array
-	(
-		'label'				=> &$GLOBALS['TL_LANG']['tl_settings']['dk_cfsTransition'],
-		'inputType'			=> 'checkbox',
-		'eval'				=> array('tl_class' => 'w50')
-	);
-
-	$GLOBALS['TL_DCA']['tl_settings']['fields']['dk_cfsDebug'] = array
-	(
-		'label'				=> &$GLOBALS['TL_LANG']['tl_settings']['dk_cfsDebug'],
-		'inputType'			=> 'checkbox',
-		'eval'				=> array('tl_class' => 'w50')
 	);
 }

@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 3.0.0 (2026-08-07)
+
+* Change: Anzeige-Engine von jQuery.carouFredSel auf Swiper (`contao-components/swiper`, wie im Contao-Core) umgestellt; jQuery wird nicht mehr benötigt. Die Datenbanktabellen, Element- und Modultypen bleiben unverändert, die gespeicherten Einstellungen werden auf Swiper-Parameter abgebildet (Tabelle in der README).
+* Add: Play/Pause-Schalter, Fortschrittsbalken und -kreis (über das `autoplayTimeLeft`-Ereignis), verzögerter Autoplay-Start, zufälliges Startelement, Vollbild-Hintergrundmodus per CSS `object-fit` und Synchronisierung zweier Karussells (Controller-Modul) als Vanilla-JS-Initialisierer `public/js/caroufredsel.js`.
+* Change: Synchronisierte Vorschauleiste auf das Swiper-Thumbs-Modul umgestellt; die Seitenzahlen werden als Links gerendert, damit die mitgelieferten Skins weiter greifen.
+* Change: Templates auf Swiper-Markup (`swiper` → `swiper-wrapper` → `swiper-slide`) umgestellt; der Initialisierungs-Aufruf läuft über `TL_BODY` statt `TL_JQUERY`, jQuery muss nicht mehr im Seitenlayout aktiviert sein.
+* Change: Felder ohne Swiper-Entsprechung aus den Paletten entfernt (`scrollQueue`, `scrollEasing`, `cookie`, `responsive`, `swipeOnTouch`, `swipeOnMouse`, `autoProgressInterval`); die Datenbankspalten bleiben erhalten. Von den Erweiterungs-Einstellungen bleibt nur `dk_cfsUsageMode`.
+* Fix: Die jQuery-Hilfsbibliotheken (carouFredSel, easing, touchSwipe, mousewheel, transit, throttle-debounce, krioImageLoader, readyLoad) wurden entfernt.
+
 ## Version 2.0.0 (2026-08-06)
 
 * Add: Portierung der Contao-3-Erweiterung `dklemmt/contao_dk_caroufredsel` (1.3.2) als Contao-Bundle `schachbulle/contao-caroufredsel-bundle` für Contao 4.13 und Contao 5 mit PHP 8.1+.

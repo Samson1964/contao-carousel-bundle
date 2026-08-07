@@ -18,26 +18,30 @@ use Contao\DC_Table;
 use Contao\Message;
 
 // Je nach Nutzungsmodus (Contao-Einstellung dk_cfsUsageMode) stehen nur die
-// gängigsten oder alle carouFredSel-Optionen zur Verfügung
+// gängigsten oder alle Optionen zur Verfügung. Felder ohne
+// Swiper-Entsprechung (scrollQueue, scrollEasing, cookie, responsive,
+// swipeOnTouch/-OnMouse — Swiper ist immer responsiv und Touch-fähig)
+// bleiben als Datenbankspalten erhalten, erscheinen aber nicht mehr in den
+// Paletten.
 switch (Config::get('dk_cfsUsageMode'))
 {
 	default:
 	case 'basic':
 		$subpaletteUsePlay = 'direction,carouselType,scrollItems,autoPlay';
-		$subpaletteUseTransitions = 'scrollFx,scrollEasing,scrollDuration';
+		$subpaletteUseTransitions = 'scrollFx,scrollDuration';
 		$subpaletteUseGeneralSize = 'widthSelect,heightSelect';
-		$subpaletteUseItemsGeneral = 'responsive,itemsVisibleSelect';
+		$subpaletteUseItemsGeneral = 'itemsVisibleSelect';
 		$subpaletteUseItemsSize = 'itemsWidthSelect,itemsHeightSelect';
 		$subpaletteUseNavigation = 'navigation,pagination';
 		break;
 
 	case 'advanced':
-		$subpaletteUsePlay = 'direction,carouselType,scrollItems,scrollQueue,autoPlay';
-		$subpaletteUseTransitions = 'scrollFx,scrollEasing,scrollDuration';
+		$subpaletteUsePlay = 'direction,carouselType,scrollItems,autoPlay';
+		$subpaletteUseTransitions = 'scrollFx,scrollDuration';
 		$subpaletteUseGeneralSize = 'widthSelect,heightSelect,padding';
-		$subpaletteUseItemsGeneral = 'responsive,cookie,itemsVisibleSelect,itemsStartSelect';
+		$subpaletteUseItemsGeneral = 'itemsVisibleSelect,itemsStartSelect';
 		$subpaletteUseItemsSize = 'itemsWidthSelect,itemsHeightSelect';
-		$subpaletteUseNavigation = 'prevKey,nextKey,swipeOnTouch,swipeOnMouse,mousewheel,navigation,pagination';
+		$subpaletteUseNavigation = 'prevKey,nextKey,mousewheel,navigation,pagination';
 		break;
 }
 
@@ -499,7 +503,7 @@ $GLOBALS['TL_DCA']['tl_dk_caroufredsel'] = array
 			'label'				=> &$GLOBALS['TL_LANG']['tl_dk_caroufredsel']['itemsStartSelect'],
 			'exclude'			=> true,
 			'inputType'			=> 'select',
-			'options'			=> array('number', 'random', 'anchor'),
+			'options'			=> array('number', 'random'),
 			'reference'			=> &$GLOBALS['TL_LANG']['tl_dk_caroufredsel']['itemsStartSelect'],
 			'eval'				=> array('helpwizard' => true, 'submitOnChange' => true, 'includeBlankOption' => true, 'tl_class' => 'w50 clr'),
 			'sql'				=> "varchar(32) NOT NULL default ''"
@@ -663,11 +667,6 @@ class tl_dk_caroufredsel extends Backend
 
 		if (Config::get('dk_cfsUsageMode') == 'advanced')
 		{
-			if ($obj->autoProgress != 'none')
-			{
-				$GLOBALS['TL_DCA']['tl_dk_caroufredsel']['subpalettes']['usePlay'] = str_replace('autoProgress', 'autoProgress,autoProgressInterval', $GLOBALS['TL_DCA']['tl_dk_caroufredsel']['subpalettes']['usePlay']);
-			}
-
 			if ($obj->pagination)
 			{
 				$GLOBALS['TL_DCA']['tl_dk_caroufredsel']['subpalettes']['useNavigation'] = str_replace('pagination', 'pagination,paginationKeys', $GLOBALS['TL_DCA']['tl_dk_caroufredsel']['subpalettes']['useNavigation']);

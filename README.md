@@ -1,21 +1,21 @@
 # contao-caroufredsel-bundle
 
-Bildkarussell für Contao auf Basis des jQuery-Plugins [carouFredSel](https://github.com/Samson1964/carouFredSel) von Fred Heusschen. Das Bundle ist die Portierung der Contao-3-Erweiterung [dk_caroufredsel](https://github.com/dklemmt/contao_dk_caroufredsel) von Dirk Klemmt auf **Contao 4.13 und Contao 5** mit **PHP 8**.
+Bildkarussell für **Contao 4.13 und Contao 5** auf Basis von **Swiper** ([contao-components/swiper](https://packagist.org/packages/contao-components/swiper)), das auch der Contao-Core verwendet. Das Bundle ist die Portierung der Contao-3-Erweiterung [dk_caroufredsel](https://github.com/dklemmt/contao_dk_caroufredsel) von Dirk Klemmt: Die Datenbanktabellen, Element- und Modultypen bleiben unverändert, nur die Anzeige-Engine ist seit Version 3.0.0 Swiper statt des aufgegebenen jQuery-Plugins carouFredSel. jQuery wird nicht mehr benötigt.
 
 ## Funktionen
 
-- **Galerie** (Inhaltselement und Frontend-Modul): Bilder aus Dateien oder Ordnern als Karussell, wahlweise mit synchronisierter Vorschauleiste (Thumbnails), Lightbox-Großansicht und Begrenzung der Bildanzahl.
-- **Wrapper Start/Stop** (Inhaltselemente): verpackt beliebige Inhaltselemente dazwischen in ein Karussell — jedes Element wird eine Kachel.
+- **Galerie** (Inhaltselement und Frontend-Modul): Bilder aus Dateien oder Ordnern als Karussell, wahlweise mit **synchronisierter Vorschauleiste** (Swiper-Thumbs-Modul), Lightbox-Großansicht und Begrenzung der Bildanzahl.
+- **Wrapper Start/Stop** (Inhaltselemente): verpackt beliebige Inhaltselemente dazwischen in ein Karussell — jedes Element wird automatisch eine Kachel.
 - **Karussell-Modul**: zeigt die im Backend-Modul gepflegten Inhaltselemente einer Karussell-Konfiguration als Karussell.
 - **Newsticker** (Frontend-Modul): lässt Nachrichtenbeiträge als Ticker durchlaufen (benötigt `contao/news-bundle`).
-- **Hintergrund-Slideshow** (Inhaltselement und Frontend-Modul): bildschirmfüllende, durchlaufende Hintergrundbilder.
-- **Wiederverwendbare Karussell-Konfigurationen**: Abspielverhalten, Übergänge, Größen, Navigation, Paginierung, Tastatur-, Touch- und Mausrad-Steuerung werden zentral im Backend-Modul „carouFredSel" gepflegt und von beliebig vielen Elementen/Modulen genutzt.
+- **Hintergrund-Slideshow** (Inhaltselement und Frontend-Modul): bildschirmfüllende, durchlaufende Hintergrundbilder (CSS `object-fit`, ohne Skript-Rechnereien).
+- **Wiederverwendbare Karussell-Konfigurationen**: Abspielverhalten, Übergänge, Größen, Navigation, Paginierung, Tastatur- und Mausrad-Steuerung werden zentral im Backend-Modul „carouFredSel" gepflegt und von beliebig vielen Elementen/Modulen genutzt.
+- **Extras, die der Core-Slider nicht bietet:** Play/Pause-Schalter, Fortschrittsbalken oder -kreis je Autoplay-Intervall, verzögerter Autoplay-Start, zufälliges Startelement, Synchronisierung zweier Karussells (Controller-Modul), fertiges Skin „light".
 
 ## Voraussetzungen
 
 - Contao **4.13** oder **5.x**
 - PHP **8.1** oder neuer
-- **jQuery** muss im Seitenlayout aktiviert sein (Bereich „JavaScript-Bibliotheken" bzw. „jQuery laden"). Die Skripte des Bundles werden über `TL_JQUERY` eingebunden und erscheinen nur, wenn das Layout jQuery lädt.
 - Für das Newsticker-Modul: `contao/news-bundle`
 
 ## Installation
@@ -24,7 +24,7 @@ Bildkarussell für Contao auf Basis des jQuery-Plugins [carouFredSel](https://gi
 composer require schachbulle/contao-caroufredsel-bundle
 ```
 
-Anschließend im Install-Tool bzw. über `contao:migrate` die Datenbank aktualisieren.
+Anschließend im Install-Tool bzw. über `contao:migrate` die Datenbank aktualisieren. Swiper wird als Composer-Abhängigkeit (`contao-components/swiper`) automatisch mitinstalliert.
 
 ## Nutzung
 
@@ -34,36 +34,61 @@ Anschließend im Install-Tool bzw. über `contao:migrate` die Datenbank aktualis
 
 ## Einstellungen der Erweiterung
 
-| Einstellung          | Werte                                        | Standard          | Wirkung |
-|----------------------|----------------------------------------------|-------------------|---------|
-| `dk_cfsUsageMode`    | `basic`, `advanced`                          | `basic`           | Umfang der angebotenen Optionen im Backend |
-| `dk_cfsTriggerMode`  | `onDocumentReady`, `onWindowLoad`, `readyLoad` | `onDocumentReady` | Zeitpunkt, zu dem die Karussells starten |
-| `dk_cfsOnWindowResize` | leer, `throttle`, `debounce`               | leer              | Drosselung des Resize-Ereignisses |
-| `dk_cfsImageLoader`  | Checkbox                                     | aus               | Bilder per krioImageLoader nachladen |
-| `dk_cfsTransition`   | Checkbox                                     | aus               | CSS-Übergänge statt jQuery-Animationen |
-| `dk_cfsDebug`        | Checkbox                                     | aus               | Debug-Ausgaben des jQuery-Plugins |
+Es gibt nur noch eine Einstellung:
 
-- **Contao 4.13:** Die Einstellungen erscheinen unter **System → Einstellungen** (Bereich „carouFredSel").
-- **Contao 5:** Das Einstellungen-Modul existiert nicht mehr. Die Werte können in der `config/parameters.yml` bzw. über `system/config/localconfig.php` gesetzt werden, z. B. `$GLOBALS['TL_CONFIG']['dk_cfsUsageMode'] = 'advanced';` — ohne Eintrag gelten die Standardwerte.
+| Einstellung       | Werte               | Standard | Wirkung |
+|-------------------|---------------------|----------|---------|
+| `dk_cfsUsageMode` | `basic`, `advanced` | `basic`  | Umfang der angebotenen Optionen im Backend |
+
+- **Contao 4.13:** unter **System → Einstellungen** (Bereich „carouFredSel").
+- **Contao 5:** Das Einstellungen-Modul existiert nicht mehr; der Wert kann über `system/config/localconfig.php` gesetzt werden: `$GLOBALS['TL_CONFIG']['dk_cfsUsageMode'] = 'advanced';`
+
+## Abbildung der Karussell-Optionen auf Swiper
+
+| Feld (tl_dk_caroufredsel) | Swiper |
+|---------------------------|--------|
+| `carouselType` circular/infinite | `loop: true` |
+| `carouselType` once | kein Loop |
+| `direction` up/down | `direction: 'vertical'` |
+| `direction` right/down | `autoplay.reverseDirection` |
+| `scrollItems` | `slidesPerGroup` |
+| `autoPlay`, `autoTimeoutDuration` | `autoplay.delay` |
+| `autoDelay` | verzögerter `autoplay.start()` |
+| `scrollPauseOnHover` | `autoplay.pauseOnMouseEnter` |
+| `autoProgress` bar/pie | Fortschrittsanzeige über das `autoplayTimeLeft`-Ereignis |
+| `scrollFx` fade/crossfade | `effect: 'fade'`; alle anderen Effekte → Standard `slide` |
+| `scrollDuration` | `speed` |
+| `widthSelect`/`heightSelect`, `padding`, `align` | CSS des Containers; `padding` wird zu `spaceBetween` |
+| `itemsWidth`/`itemsHeight` | CSS der Kacheln + `slidesPerView: 'auto'` |
+| `itemsVisibleSelect` fixed | `slidesPerView: n` |
+| `itemsVisibleSelect` variable, min/max | `slidesPerView: 'auto'` |
+| `itemsStartSelect` number/random | `initialSlide` (bei random im Browser ausgewürfelt) |
+| `prevKey`/`nextKey`, `paginationKeys` | `keyboard.enabled` (immer Pfeiltasten) |
+| `mousewheel` | `mousewheel` |
+| `navigation`, `pagination` | eigene Elemente der Templates als `prevEl`/`nextEl` bzw. `pagination.el` |
+| Vorschauleiste | Thumbs-Modul (eigener Swiper, gekoppelt) |
+| Synchronisierung | Controller-Modul |
+
+**Ohne Wirkung** (Spalten bleiben erhalten, Felder sind ausgeblendet): `scrollQueue`, `scrollEasing`, `cookie`, `responsive` (Swiper ist immer responsiv), `swipeOnTouch`/`swipeOnMouse` (Touch und Mausziehen sind immer aktiv), `autoProgressInterval` sowie die früheren jQuery-Einstellungen (`dk_cfsTriggerMode`, `dk_cfsOnWindowResize`, `dk_cfsImageLoader`, `dk_cfsTransition`, `dk_cfsDebug`).
 
 ## Templates
 
 Alle Templates lassen sich wie gewohnt im Theme überschreiben und (im erweiterten Modus) je Element auswählen:
 
-- `ce_caroufredsel`, `mod_caroufredsel`, `mod_caroufredsel_ticker`, `news_caroufredsel_ticker` — HTML-Gerüste
+- `ce_caroufredsel`, `mod_caroufredsel`, `mod_caroufredsel_ticker`, `news_caroufredsel_ticker` — HTML-Gerüste (Swiper-Markup: `swiper` → `swiper-wrapper` → `swiper-slide`)
 - `caroufredsel_gallery`, `caroufredsel_thumbnails` — Bild- und Vorschaulisten
-- `js_caroufredsel` — JavaScript-Aufruf des Plugins
+- `js_caroufredsel` — Aufruf des Initialisierers (`caroufredselInit`, siehe `public/js/caroufredsel.js`)
 - `css_caroufredsel`, `css_caroufredsel_light` — elementabhängiges CSS; „light" ist ein fertiges Skin mit Pfeilen, Play/Pause und Paginierung
 
-## Umstieg von dk_caroufredsel (Contao 3)
+## Umstieg
 
-- Tabellen- und Feldnamen sind unverändert (`tl_dk_caroufredsel`, `dk_cfs*`-Felder); bestehende Daten bleiben nutzbar. Die alte Erweiterung vorher deinstallieren.
-- Die Sortierung „benutzerdefiniert" folgt jetzt der Reihenfolge im Dateibaum-Feld (das frühere Feld `orderSRC` gibt es seit Contao 4.10 nicht mehr). Eine individuell sortierte Galerie einmal öffnen, ordnen und speichern.
-- Die Backend-Einstellungen `space` und `guests` der alten Paletten sind entfallen (in Contao 5 entfernt).
+- **Von Version 2.x dieses Bundles:** Keine Datenänderungen nötig. Eigene Template-Ableitungen von `ce_caroufredsel`, `mod_caroufredsel*`, `js_caroufredsel` oder den CSS-Templates müssen an das Swiper-Markup angepasst werden. jQuery kann aus dem Layout entfernt werden, sofern nichts anderes es braucht.
+- **Von dk_caroufredsel (Contao 3):** Tabellen- und Feldnamen sind unverändert; bestehende Daten bleiben nutzbar. Die alte Erweiterung vorher deinstallieren. Die Sortierung „benutzerdefiniert" folgt der Reihenfolge im Dateibaum-Feld (das frühere Feld `orderSRC` gibt es seit Contao 4.10 nicht mehr) — individuell sortierte Galerien einmal öffnen, ordnen und speichern.
 
 ## Danksagung und Lizenz
 
-- **Dirk Klemmt** — Autor der ursprünglichen Contao-3-Erweiterung [contao_dk_caroufredsel](https://github.com/dklemmt/contao_dk_caroufredsel) (MIT/GPL)
-- **Fred Heusschen (Caroufredsel)** — Autor des jQuery-Plugins [carouFredSel](https://github.com/Samson1964/carouFredSel) (MIT/GPL)
+- **Dirk Klemmt** — Autor der ursprünglichen Contao-3-Erweiterung [contao_dk_caroufredsel](https://github.com/dklemmt/contao_dk_caroufredsel) (MIT/GPL); Backend-Konzept und Skins stammen aus dieser Erweiterung
+- **Vladimir Kharlampidi** — Autor von [Swiper](https://swiperjs.com/) (MIT)
+- **Fred Heusschen (Caroufredsel)** — Autor des namensgebenden jQuery-Plugins [carouFredSel](https://github.com/Samson1964/carouFredSel), das bis Version 2.x die Engine war
 
-Das Bundle steht unter der [LGPL-3.0-or-later](LICENSE); die eingebetteten JavaScript-Bibliotheken behalten ihre ursprünglichen Lizenzen (siehe Dateiköpfe unter `src/Resources/public/js/`).
+Das Bundle steht unter der [LGPL-3.0-or-later](LICENSE).

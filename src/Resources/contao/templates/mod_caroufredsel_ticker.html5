@@ -7,22 +7,17 @@
 		<<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
 <?php endif; ?>
 
-		<div class="caroufredsel" id="caroufredsel_<?php echo $this->id; ?>">
-			<?php foreach($this->articles as $article) echo $article ?>
+		<div class="caroufredsel swiper" id="caroufredsel_<?php echo $this->id; ?>">
+			<div class="swiper-wrapper">
+				<?php foreach ($this->articles as $article) echo $article; ?>
+			</div>
 		</div>
 
 <?php if ($this->autoProgress || $this->autoButton || $this->navigation || $this->pagination): ?>
-		<div class="clearfix"></div>
 
 	<?php if ($this->autoProgress): ?>
 		<div class="caroufredsel_bar_wrapper" id="caroufredsel_bar_wrapper_<?php echo $this->id; ?>">
-
-		<?php if ($this->autoProgress == 'pie'): ?>
-			<canvas class="caroufredsel_bar" id="caroufredsel_bar_<?php echo $this->id; ?>"></canvas>
-		<?php else: ?> 
 			<div class="caroufredsel_bar" id="caroufredsel_bar_<?php echo $this->id; ?>"></div>
-		<?php endif; ?>
-
 		</div>
 	<?php endif; ?>
 
@@ -38,7 +33,7 @@
 			<?php endif; ?>
 
 			<?php if ($this->autoButton): ?>
-				<a class="caroufredsel_button" id="caroufredsel_button_<?php echo $this->id; ?>" href="#"><span><?php echo $GLOBALS['TL_LANG']['DK_CFS']['pause']; ?></span></a>	
+				<a class="caroufredsel_button" id="caroufredsel_button_<?php echo $this->id; ?>" href="#"><span><?php echo $GLOBALS['TL_LANG']['DK_CFS']['pause']; ?></span></a>
 			<?php endif; ?>
 
 			</div>

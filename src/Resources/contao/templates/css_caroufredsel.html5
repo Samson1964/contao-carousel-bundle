@@ -1,37 +1,69 @@
 <?php
-	// progress bar definitions
+	// Vorgaben der Fortschrittsanzeige (im eigenen CSS-Template überschreibbar)
 	$progressBarHeight = 2;
 	$progressBarBackgroundHeight = 6;
 	$progressBarColor = '#eeeeee';
 	$progressBarBackgroundColor = '#222222';
+	$progressPieSize = 24;
 ?>
-<?php if ($this->autoProgress == 'pie'): ?>
-<script>
-progressBarColor_<?php echo $this->id; ?> = '<?php echo $progressBarColor; ?>';
-progressBarBackgroundColor_<?php echo $this->id; ?> = '<?php echo $progressBarBackgroundColor; ?>';
-</script>
+<style>
+<?php if ($this->width || $this->height || $this->align): ?>
+#caroufredsel_skin_<?php echo $this->id; ?> {
+<?php if ($this->width): ?>
+	<?php echo $this->width; ?>
+
 <?php endif; ?>
-<?php if ($this->autoProgress || $this->useThumbnails && (($this->type != 'caroufredsel_background' && $this->thumbnailsPosition != 'top' && $this->thumbnailsPosition != 'bottom') || ($this->thumbnailsWidth && ($this->thumbnailsPosition == 'left' || $this->thumbnailsPosition == 'right')) || ($this->thumbnailsHeight && ($this->thumbnailsPosition == 'top' || $this->thumbnailsPosition == 'bottom')))): ?>
-<style type="text/css">
-<?php if ($this->autoProgress): ?>
-#caroufredsel_skin_<?php echo $this->id; ?> .caroufredsel_bar_wrapper {
+<?php if ($this->align == 'center'): ?>
+	margin-left: auto;
+	margin-right: auto;
+<?php elseif ($this->align == 'left'): ?>
+	margin-right: auto;
+<?php elseif ($this->align == 'right'): ?>
+	margin-left: auto;
+<?php endif; ?>
+}
+<?php endif; ?>
+<?php if ($this->height): ?>
+#caroufredsel_<?php echo $this->id; ?> { <?php echo $this->height; ?> }
+<?php endif; ?>
+<?php if ($this->itemsWidth || $this->itemsHeight): ?>
+#caroufredsel_<?php echo $this->id; ?> .swiper-slide {
+<?php if ($this->itemsWidth): ?>
+	<?php echo $this->itemsWidth; ?>
+
+<?php endif; ?>
+<?php if ($this->itemsHeight): ?>
+	<?php echo $this->itemsHeight; ?>
+
+<?php endif; ?>
+}
+<?php endif; ?>
 <?php if ($this->autoProgress == 'pie'): ?>
+#caroufredsel_bar_wrapper_<?php echo $this->id; ?> {
 	position: absolute;
 	top: 5px;
 	right: 5px;
-<?php else: ?>
+	z-index: 10;
+}
+#caroufredsel_bar_<?php echo $this->id; ?> {
+	--cfs-pie-color: <?php echo $progressBarColor; ?>;
+	--cfs-pie-background: <?php echo $progressBarBackgroundColor; ?>;
+	width: <?php echo $progressPieSize; ?>px;
+	height: <?php echo $progressPieSize; ?>px;
+	border-radius: 50%;
+	background: <?php echo $progressBarBackgroundColor; ?>;
+}
+<?php elseif ($this->autoProgress): ?>
+#caroufredsel_bar_wrapper_<?php echo $this->id; ?> {
 	height: <?php echo $progressBarBackgroundHeight; ?>px;
 	background-color: <?php echo $progressBarBackgroundColor; ?>;
-<?php endif; ?>
 }
-<?php if ($this->autoProgress != 'pie'): ?>
-#caroufredsel_skin_<?php echo $this->id; ?> .caroufredsel_bar {
+#caroufredsel_bar_<?php echo $this->id; ?> {
 	position: relative;
 	top: <?php echo ($progressBarBackgroundHeight - $progressBarHeight) / 2; ?>px;
 	height: <?php echo $progressBarHeight; ?>px;
 	background-color: <?php echo $progressBarColor; ?>;
 }
-<?php endif; ?>
 <?php endif; ?>
 <?php if ($this->useThumbnails): ?>
 <?php if ($this->type != 'caroufredsel_background' && $this->thumbnailsPosition != 'top' && $this->thumbnailsPosition != 'bottom'): ?>
@@ -47,6 +79,8 @@ progressBarBackgroundColor_<?php echo $this->id; ?> = '<?php echo $progressBarBa
 <?php if ($this->thumbnailsHeight && ($this->thumbnailsPosition == 'top' || $this->thumbnailsPosition == 'bottom')): ?>
 #caroufredsel_thumbnails_skin_<?php echo $this->id; ?> { <?php echo $this->thumbnailsHeight; ?> }
 <?php endif; ?>
+<?php if ($this->thumbnailsPosition == 'left' || $this->thumbnailsPosition == 'right'): ?>
+#caroufredsel_thumbnails_<?php echo $this->id; ?> { <?php echo $this->thumbnailsHeight ?: 'height: 100%;'; ?> }
+<?php endif; ?>
 <?php endif; ?>
 </style>
-<?php endif; ?>

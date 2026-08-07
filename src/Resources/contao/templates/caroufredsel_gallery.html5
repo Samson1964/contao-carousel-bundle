@@ -1,7 +1,7 @@
 
 <?php foreach ($this->body as $class=>$col): ?>
 	<?php if ($col->addImage): ?>
-<div class="caroufredsel_gallery" id="caroufredsel_gallery_<?php echo $this->id; ?>_<?php echo $class; ?>">
+<div class="swiper-slide caroufredsel_gallery" id="caroufredsel_gallery_<?php echo $this->id; ?>_<?php echo $class; ?>">
 	<figure class="image_container">
 
 		<?php if ($col->href): ?>

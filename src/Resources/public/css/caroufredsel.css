@@ -1,14 +1,63 @@
-/* dk_caroufredsel global styles */
-.caroufredsel_skin .image_container img, .caroufredsel_thumbnails_skin .image_container img {
-	vertical-align: bottom;
-}
-.caroufredsel > div, .caroufredsel > section, .caroufredsel_thumbnails > div {
-	float: left;
-}
-.caroufredsel .clearfix {
-	float: none;
-	clear: both;
-}
+/**
+ * carouFredSel-Bildkarussell für Contao — globale Stile (Swiper-Engine)
+ *
+ * Das Layout der Kacheln übernimmt seit Version 3.0.0 Swiper (Flexbox);
+ * die früheren Float-Regeln des jQuery-Plugins sind entfallen.
+ */
+
+.caroufredsel_skin,
 .caroufredsel_thumbnails_skin {
 	position: relative;
+}
+
+.caroufredsel_skin .image_container img,
+.caroufredsel_thumbnails_skin .image_container img {
+	vertical-align: bottom;
+	max-width: 100%;
+}
+
+/* Bei slidesPerView "auto" richtet sich die Kachelbreite nach dem Inhalt;
+   bei fester Anzahl setzt Swiper die Breite als Inline-Stil und gewinnt */
+.caroufredsel .swiper-slide,
+.caroufredsel_thumbnails .swiper-slide {
+	box-sizing: border-box;
+	width: auto;
+}
+
+/* Räumt die Floats der seitlichen Vorschauleiste auf, damit der umgebende
+   Container nicht zusammenfällt */
+.caroufredsel_clear {
+	clear: both;
+}
+
+/* Fortschrittsbalken: die Breite setzt der Initialisierer je Autoplay-Tick */
+.caroufredsel_bar_wrapper {
+	overflow: hidden;
+}
+
+.caroufredsel_bar {
+	width: 0;
+}
+
+/* Vollbild-Hintergrundmodus: das Karussell liegt bildschirmfüllend hinter
+   dem Seiteninhalt, die Bilder decken das Fenster formatfüllend ab */
+.caroufredsel_background_mode {
+	position: fixed !important;
+	top: 0;
+	left: 0;
+	width: 100vw !important;
+	height: 100vh !important;
+	z-index: -1;
+}
+
+.caroufredsel_background_mode .swiper-slide,
+.caroufredsel_background_mode .swiper-slide .image_container {
+	width: 100vw !important;
+	height: 100vh !important;
+}
+
+.caroufredsel_background_mode .swiper-slide img {
+	width: 100vw;
+	height: 100vh;
+	object-fit: cover;
 }

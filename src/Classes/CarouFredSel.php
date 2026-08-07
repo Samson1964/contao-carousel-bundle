@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Schachbulle\ContaoCaroufredselBundle\Classes;
 
-use Contao\Config;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
@@ -21,15 +20,30 @@ use Schachbulle\ContaoCaroufredselBundle\Models\CarouFredSelModel;
 /**
  * Zentrale Helferklasse des Karussells.
  *
- * Sie übersetzt eine im Backend gepflegte Karussell-Konfiguration
- * (tl_dk_caroufredsel) in die drei Frontend-Templates: das HTML-Gerüst,
- * den elementabhängigen CSS-Block und den JavaScript-Aufruf von
- * jQuery.carouFredSel. Außerdem registriert sie alle benötigten Assets
- * (CSS- und JavaScript-Dateien) über die Contao-Globals.
+ * Seit Version 3.0.0 läuft das Frontend nicht mehr über das aufgegebene
+ * jQuery-Plugin carouFredSel, sondern über Swiper (contao-components/swiper),
+ * das auch der Contao-Core verwendet. Die Klasse übersetzt die unverändert
+ * in tl_dk_caroufredsel gespeicherten Einstellungen in Swiper-Parameter und
+ * befüllt die drei Frontend-Templates: das HTML-Gerüst, den elementabhängigen
+ * CSS-Block und die JSON-Konfiguration für den JavaScript-Initialisierer
+ * (public/js/caroufredsel.js). jQuery wird nicht mehr benötigt.
  *
- * Anders als in der Contao-3-Fassung ist die Klasse bewusst statisch und
- * erbt nicht mehr von Frontend: Sie hält keinen Zustand und braucht keine
- * Contao-Altlasten wie den geschützten System-Konstruktor.
+ * Abbildung der wichtigsten Felder auf Swiper:
+ * - carouselType circular/infinite → loop, once → kein Loop
+ * - scrollItems → slidesPerGroup, scrollDuration → speed
+ * - scrollFx fade/crossfade → effect 'fade', alles andere → 'slide'
+ * - autoPlay/autoTimeoutDuration → autoplay.delay, scrollPauseOnHover →
+ *   autoplay.pauseOnMouseEnter, direction right/down → reverseDirection
+ * - itemsVisible → slidesPerView, itemsStart → initialSlide bzw. Zufall
+ * - navigation/pagination → eigene Elemente der Templates als prevEl/nextEl
+ *   bzw. pagination.el, prevKey/nextKey/paginationKeys → keyboard
+ * - mousewheel → mousewheel, Vorschauleiste → Thumbs-Modul,
+ *   Synchronisierung → Controller-Modul
+ *
+ * Ohne Entsprechung in Swiper und deshalb wirkungslos: scrollQueue,
+ * scrollEasing, cookie, autoProgressInterval, responsive (Swiper ist immer
+ * responsiv) sowie die früheren jQuery-Hilfsoptionen (TriggerMode,
+ * ImageLoader, Transition, OnWindowResize, Debug).
  */
 class CarouFredSel
 {
@@ -52,20 +66,24 @@ class CarouFredSel
 
 	/**
 	 * Befüllt die drei Frontend-Templates eines Karussell-Elements und
-	 * registriert alle benötigten Assets.
+	 * registriert die Swiper-Assets.
 	 *
-	 * Es werden nur Werte in die Templates geschrieben, die vom
-	 * carouFredSel-Standard abweichen — der JavaScript-Aufruf bleibt dadurch
-	 * so kurz wie möglich. Als Seiteneffekt füllt die Methode die Globals
-	 * TL_CSS, TL_HEAD, TL_JAVASCRIPT und TL_JQUERY; der TL_JQUERY-Block wird
-	 * nur ausgegeben, wenn jQuery im Seitenlayout aktiviert ist.
+	 * Als Grundverhalten gelten die Vorgaben des alten carouFredSel-Plugins
+	 * (Endlosschleife, automatisches Abspielen alle 2500 ms, 500 ms
+	 * Übergangsdauer); die im Datensatz aktivierten Gruppen überschreiben
+	 * sie. Als Seiteneffekt füllt die Methode die Globals TL_CSS,
+	 * TL_JAVASCRIPT (Swiper-Bibliothek und Initialisierer im Seitenkopf),
+	 * TL_HEAD (elementabhängiger CSS-Block) und TL_BODY (Aufruf des
+	 * Initialisierers am Seitenende, wenn das DOM steht).
 	 *
 	 * @param mixed    $carouFredSelId      ID des Datensatzes in tl_dk_caroufredsel
 	 * @param string   $strCarouFredSelType Element- bzw. Modultyp (z. B. 'caroufredsel_gallery');
 	 *                                      steuert typabhängige Sonderfälle wie die Hintergrund-Slideshow
 	 * @param Template $objTemplateHtml     Template für das HTML-Gerüst
 	 * @param Template $objTemplateCss      Template für den elementabhängigen CSS-Block (landet in TL_HEAD)
-	 * @param Template $objTemplateJs       Template für den JavaScript-Aufruf (landet in TL_JQUERY)
+	 * @param Template $objTemplateJs       Template für den Initialisierungs-Aufruf (landet in TL_BODY);
+	 *                                      erwartet vorab gesetzte Werte wie id, synchronise und die
+	 *                                      Thumbnail-Angaben aus applyThumbnailSettings()
 	 *
 	 * @return void Ohne gültige Konfiguration kehrt die Methode kommentarlos
 	 *              zurück und lässt die Templates unverändert
@@ -83,80 +101,67 @@ class CarouFredSel
 		$objTemplateJs->type =
 		$objTemplateCss->type = $strCarouFredSelType;
 
-		if ($objTemplateJs->synchronise)
-		{
-			$objTemplateJs->synchronise = 'synchronise : ["#caroufredsel_' . $objTemplateJs->synchronise . '", false]';
-		}
+		// Grundverhalten des alten carouFredSel-Plugins nachbilden
+		$options = array
+		(
+			'loop' => true,
+			'speed' => 500,
+			'autoplay' => array('delay' => 2500),
+		);
 
 		// --- Abspielverhalten
 		if ($objCarouFredSel->usePlay)
 		{
-			// carouFredSel-Option 'direction': Standardwert ist 'left'
+			// Laufrichtung: up/down → vertikales Karussell; right/down laufen
+			// rückwärts, das bildet autoplay.reverseDirection ab
+			if ($objCarouFredSel->direction == 'up' || $objCarouFredSel->direction == 'down')
+			{
+				$options['direction'] = 'vertical';
+			}
+			if ($objCarouFredSel->direction == 'right' || $objCarouFredSel->direction == 'down')
+			{
+				$options['autoplay']['reverseDirection'] = true;
+			}
 			if ($objCarouFredSel->direction != 'left')
 			{
-				$objTemplateJs->direction = 'direction: "' . $objCarouFredSel->direction . '"';
 				$objTemplateCss->direction = $objCarouFredSel->direction;
 			}
 
-			// carouFredSel-Optionen 'circular' und 'infinite': Vorgabe der Erweiterung ist 'circular'
+			// 'once': einmal bis zum Ende, keine Endlosschleife
 			if ($objCarouFredSel->carouselType == 'once')
 			{
-				$objTemplateJs->carouselType = 'circular: false, infinite: false';
-			}
-			elseif ($objCarouFredSel->carouselType == 'infinite')
-			{
-				$objTemplateJs->carouselType = 'circular: false';
+				$options['loop'] = false;
 			}
 
-			// carouFredSel-Option 'scroll.items': Standardwert ist 'null'
-			if ($objCarouFredSel->scrollItems != '0')
+			// Anzahl der Elemente je Weiterschaltung
+			if ($objCarouFredSel->scrollItems > 0)
 			{
-				$objTemplateJs->scrollItems = 'items: ' . $objCarouFredSel->scrollItems;
-			}
-
-			// carouFredSel-Option 'scroll.queue': Standardwert ist 'false'
-			if ($objCarouFredSel->scrollQueue != 'none')
-			{
-				$objTemplateJs->scrollQueue = 'queue: ' . ($objCarouFredSel->scrollQueue == 'all' ? 'true' : '"' . $objCarouFredSel->scrollQueue . '"');
+				$options['slidesPerGroup'] = (int) $objCarouFredSel->scrollItems;
 			}
 
 			if (!$objCarouFredSel->autoPlay)
 			{
-				$objTemplateJs->autoPlay = 'auto: false';
+				$options['autoplay'] = false;
 			}
-
-			if ($objCarouFredSel->autoPlay)
+			else
 			{
-				// carouFredSel-Option 'auto.timeoutDuration': Standardwert ist '2500'
-				if ($objCarouFredSel->autoTimeoutDuration != '2500')
+				$options['autoplay']['delay'] = (int) $objCarouFredSel->autoTimeoutDuration;
+
+				// Anhalten, solange der Zeiger über dem Karussell steht; die
+				// carouFredSel-Nuancen (restart/resume/immediate) kennt Swiper
+				// nicht und sie fallen auf pauseOnMouseEnter zusammen
+				if ($objCarouFredSel->scrollPauseOnHover != 'none' && $objCarouFredSel->scrollPauseOnHover != '')
 				{
-					$objTemplateJs->autoTimeoutDuration = 'timeoutDuration: ' . $objCarouFredSel->autoTimeoutDuration;
+					$options['autoplay']['pauseOnMouseEnter'] = true;
+					$options['autoplay']['disableOnInteraction'] = false;
 				}
 
-				// carouFredSel-Option 'auto.delay': Standardwert ist '0'
-				if ($objCarouFredSel->autoDelay != '0')
-				{
-					$objTemplateJs->autoDelay = 'delay: ' . $objCarouFredSel->autoDelay;
-				}
-
-				// carouFredSel-Option 'scroll.pauseOnHover': Standardwert ist 'false'
-				if ($objCarouFredSel->scrollPauseOnHover != 'none')
-				{
-					$objTemplateJs->scrollPauseOnHover = 'pauseOnHover: ' . ($objCarouFredSel->scrollPauseOnHover == 'restart' ? 'true' : '"' . $objCarouFredSel->scrollPauseOnHover . '"');
-				}
-
-				// carouFredSel-Option 'auto.progress': Standardwert ist 'null'
-				if ($objCarouFredSel->autoProgress != 'none')
+				// Fortschrittsanzeige (Balken oder Kreis) für Templates und Initialisierer
+				if ($objCarouFredSel->autoProgress != 'none' && $objCarouFredSel->autoProgress != '')
 				{
 					$objTemplateHtml->autoProgress =
 					$objTemplateJs->autoProgress =
 					$objTemplateCss->autoProgress = $objCarouFredSel->autoProgress;
-
-					// carouFredSel-Option 'auto.progress.interval': Standardwert ist '50'
-					if ($objCarouFredSel->autoProgressInterval != '50')
-					{
-						$objTemplateJs->autoProgressInterval = 'interval: ' . $objCarouFredSel->autoProgressInterval;
-					}
 				}
 			}
 		}
@@ -164,181 +169,107 @@ class CarouFredSel
 		// --- Übergänge
 		if ($objCarouFredSel->useTransitions)
 		{
-			// carouFredSel-Option 'scroll.fx': Standardwert ist 'scroll'
-			if ($objCarouFredSel->scrollFx != 'scroll')
+			// Nur die Fade-Effekte haben eine Swiper-Entsprechung; alle
+			// übrigen carouFredSel-Effekte fallen auf 'slide' zurück
+			if ($objCarouFredSel->scrollFx == 'fade' || $objCarouFredSel->scrollFx == 'crossfade')
 			{
-				$objTemplateJs->scrollFx = 'fx: "' . $objCarouFredSel->scrollFx . '"';
+				$options['effect'] = 'fade';
+				$options['fadeEffect'] = array('crossFade' => $objCarouFredSel->scrollFx == 'crossfade');
 			}
 
-			// carouFredSel-Option 'scroll.easing': Standardwert ist 'swing'
-			if ($objCarouFredSel->scrollEasing != 'swing')
+			if ($objCarouFredSel->scrollDuration > 0)
 			{
-				$objTemplateJs->scrollEasing = 'easing: "' . $objCarouFredSel->scrollEasing . '"';
-			}
-
-			// carouFredSel-Option 'scroll.duration': Standardwert ist '500'
-			if ($objCarouFredSel->scrollDuration != '500')
-			{
-				$objTemplateJs->scrollDuration = 'duration: ' . $objCarouFredSel->scrollDuration;
+				$options['speed'] = (int) $objCarouFredSel->scrollDuration;
 			}
 		}
 
-		// --- Gesamtgröße
+		// --- Gesamtgröße: wird vollständig über CSS gelöst (Swiper misst
+		// selbst); der Innenabstand wird zum Abstand zwischen den Kacheln
 		if ($objCarouFredSel->useGeneralSize)
 		{
-			$objTemplateJs->widthSelect = $objCarouFredSel->widthSelect;
-			$objTemplateJs->heightSelect = $objCarouFredSel->heightSelect;
-
-			// carouFredSel-Option 'width': Standardwert ist 'null'
 			switch ($objCarouFredSel->widthSelect)
 			{
-				case 'variable':
-					$objTemplateJs->width = 'width: "variable"';
-					break;
-
-				case 'auto':
-					$objTemplateJs->width = 'width: "auto"';
-					break;
-
 				case 'fixed':
-					$width = StringUtil::deserialize($objCarouFredSel->width, true);
-					if (isset($width['value']) && $width['value'] != '')
-					{
-						$objTemplateJs->width = 'width: ' . $width['value'];
-						$objTemplateCss->width = $objTemplateJs->width . ($width['unit'] ?? 'px') . ';';
-						$objTemplateCss->widthValue = $width['value'];
-						$objTemplateCss->widthUnit = $width['unit'] ?? 'px';
-					}
-					break;
-
 				case 'fluid':
 					$width = StringUtil::deserialize($objCarouFredSel->width, true);
 					if (isset($width['value']) && $width['value'] != '')
 					{
-						$objTemplateJs->width = sprintf('width: "%s%s"', $width['value'], $width['unit'] ?? '%');
-						$objTemplateCss->width = sprintf('width: %s%s;', $width['value'], $width['unit'] ?? '%');
+						$unit = $width['unit'] ?? ($objCarouFredSel->widthSelect == 'fluid' ? '%' : 'px');
+						$objTemplateCss->width = sprintf('width: %s%s;', $width['value'], $unit);
 						$objTemplateCss->widthValue = $width['value'];
-						$objTemplateCss->widthUnit = $width['unit'] ?? '%';
+						$objTemplateCss->widthUnit = $unit;
 					}
 					break;
 			}
 
-			// carouFredSel-Option 'height': Standardwert ist 'null'
 			switch ($objCarouFredSel->heightSelect)
 			{
-				case 'variable':
-					$objTemplateJs->height = 'height: "variable"';
-					break;
-
-				case 'auto':
-					$objTemplateJs->height = 'height: "auto"';
-					break;
-
 				case 'fixed':
-					$height = StringUtil::deserialize($objCarouFredSel->height, true);
-					if (isset($height['value']) && $height['value'] != '')
-					{
-						$objTemplateJs->height = 'height: ' . $height['value'];
-						$objTemplateCss->height = $objTemplateJs->height . ($height['unit'] ?? 'px') . ';';
-					}
-					break;
-
 				case 'fluid':
 					$height = StringUtil::deserialize($objCarouFredSel->height, true);
 					if (isset($height['value']) && $height['value'] != '')
 					{
-						$objTemplateJs->height = sprintf('height: "%s%s"', $height['value'], $height['unit'] ?? '%');
-						$objTemplateCss->height = sprintf('height: %s%s;', $height['value'], $height['unit'] ?? '%');
+						$unit = $height['unit'] ?? ($objCarouFredSel->heightSelect == 'fluid' ? '%' : 'px');
+						$objTemplateCss->height = sprintf('height: %s%s;', $height['value'], $unit);
 					}
 					break;
 			}
 
-			// carouFredSel-Option 'padding': Standardwert ist 'null'.
-			// Die vier Richtungswerte werden wie in der CSS-Kurzschreibweise
-			// zusammengefasst, damit der JavaScript-Aufruf kompakt bleibt.
+			// Innenabstand: carouFredSel kannte ein Padding rund um die
+			// Kacheln; das nächstliegende Swiper-Konzept ist der Abstand
+			// zwischen den Kacheln (spaceBetween). Verwendet wird der Wert
+			// in Laufrichtung (horizontal: rechts, vertikal: unten).
 			$padding = StringUtil::deserialize($objCarouFredSel->padding, true);
 			if (!empty($padding['unit']))
 			{
-				$paddingTop = (!empty($padding['top']) ? $padding['top'] : '0');
-				$paddingRight = (!empty($padding['right']) ? $padding['right'] : '0');
-				$paddingBottom = (!empty($padding['bottom']) ? $padding['bottom'] : '0');
-				$paddingLeft = (!empty($padding['left']) ? $padding['left'] : '0');
+				$space = ($options['direction'] ?? 'horizontal') == 'vertical'
+					? ($padding['bottom'] ?? '')
+					: ($padding['right'] ?? '');
 
-				if (($paddingTop == $paddingRight) && ($paddingTop == $paddingBottom) && ($paddingTop == $paddingLeft))
+				if ($space !== '' && (int) $space > 0)
 				{
-					if ($paddingTop != '0')
-					{
-						$objTemplateJs->padding = 'padding: ' . $paddingTop;
-					}
-				}
-				elseif (($paddingTop == $paddingBottom) && ($paddingRight == $paddingLeft))
-				{
-					$objTemplateJs->padding = sprintf('padding: [%s, %s]', $paddingTop, $paddingRight);
-				}
-				elseif ($paddingRight == $paddingLeft)
-				{
-					$objTemplateJs->padding = sprintf('padding: [%s, %s, %s]', $paddingTop, $paddingRight, $paddingBottom);
-				}
-				else
-				{
-					$objTemplateJs->padding = sprintf('padding: [%s, %s, %s, %s]', $paddingTop, $paddingRight, $paddingBottom, $paddingLeft);
+					$options['spaceBetween'] = (int) $space;
 				}
 			}
 
-			// carouFredSel-Option 'align': Standardwert ist 'center'; nur bei fester Breite/Höhe sinnvoll
-			if (($objCarouFredSel->align != 'center') && ($objCarouFredSel->widthSelect == 'fixed' || $objCarouFredSel->heightSelect == 'fixed'))
+			// Ausrichtung des Karussells bei fester Breite
+			if ($objCarouFredSel->widthSelect == 'fixed' && $objCarouFredSel->align != '' && $objCarouFredSel->align != 'none')
 			{
-				$objTemplateJs->align = 'align: ' . ($objCarouFredSel->align == 'none' ? 'false' : '"' . $objCarouFredSel->align . '"');
+				$objTemplateCss->align = $objCarouFredSel->align;
 			}
 		}
 
-		// --- Elementgröße
+		// --- Elementgröße: feste oder prozentuale Kachelmaße laufen über
+		// CSS; Swiper braucht dafür slidesPerView 'auto'
 		if ($objCarouFredSel->useItemsSize)
 		{
-			// carouFredSel-Option 'items.width': Standardwert ist 'null'
 			switch ($objCarouFredSel->itemsWidthSelect)
 			{
 				case 'variable':
-					$objTemplateJs->itemsWidth = 'width: "variable"';
+					$options['slidesPerView'] = 'auto';
 					break;
 
 				case 'fixed':
-					$itemsWidth = StringUtil::deserialize($objCarouFredSel->itemsWidth, true);
-					if (isset($itemsWidth['value']) && $itemsWidth['value'] != '')
-					{
-						$objTemplateJs->itemsWidth = 'width: ' . $itemsWidth['value'];
-					}
-					break;
-
 				case 'fluid':
 					$itemsWidth = StringUtil::deserialize($objCarouFredSel->itemsWidth, true);
 					if (isset($itemsWidth['value']) && $itemsWidth['value'] != '')
 					{
-						$objTemplateJs->itemsWidth = sprintf('width: "%s%s"', $itemsWidth['value'], $itemsWidth['unit'] ?? '%');
+						$unit = $itemsWidth['unit'] ?? ($objCarouFredSel->itemsWidthSelect == 'fluid' ? '%' : 'px');
+						$objTemplateCss->itemsWidth = sprintf('width: %s%s;', $itemsWidth['value'], $unit);
+						$options['slidesPerView'] = 'auto';
 					}
 					break;
 			}
 
-			// carouFredSel-Option 'items.height': Standardwert ist 'null'
 			switch ($objCarouFredSel->itemsHeightSelect)
 			{
-				case 'variable':
-					$objTemplateJs->itemsHeight = 'height: "variable"';
-					break;
-
 				case 'fixed':
-					$itemsHeight = StringUtil::deserialize($objCarouFredSel->itemsHeight, true);
-					if (isset($itemsHeight['value']) && $itemsHeight['value'] != '')
-					{
-						$objTemplateJs->itemsHeight = 'height: ' . $itemsHeight['value'];
-					}
-					break;
-
 				case 'fluid':
 					$itemsHeight = StringUtil::deserialize($objCarouFredSel->itemsHeight, true);
 					if (isset($itemsHeight['value']) && $itemsHeight['value'] != '')
 					{
-						$objTemplateJs->itemsHeight = sprintf('height: "%s%s"', $itemsHeight['value'], $itemsHeight['unit'] ?? '%');
+						$unit = $itemsHeight['unit'] ?? ($objCarouFredSel->itemsHeightSelect == 'fluid' ? '%' : 'px');
+						$objTemplateCss->itemsHeight = sprintf('height: %s%s;', $itemsHeight['value'], $unit);
 					}
 					break;
 			}
@@ -347,172 +278,154 @@ class CarouFredSel
 		// --- Allgemeine Element-Einstellungen
 		if ($objCarouFredSel->useItemsGeneral)
 		{
-			// carouFredSel-Option 'responsive': Standardwert ist 'false'
-			if ($objCarouFredSel->responsive)
-			{
-				$objTemplateJs->responsive = 'responsive: true';
-			}
-
-			// carouFredSel-Option 'cookie': Standardwert ist 'false'
-			if ($objCarouFredSel->cookie)
-			{
-				$objTemplateJs->cookie = 'cookie: true';
-			}
-
-			// carouFredSel-Option 'items.visible': Standardwert ist 'null'
+			// Anzahl sichtbarer Elemente
 			switch ($objCarouFredSel->itemsVisibleSelect)
 			{
 				case 'variable':
-					$objTemplateJs->itemsVisible = 'visible: "variable"';
+				case 'min/max':
+					// Ohne feste Anzahl richtet sich die Sichtbarkeit nach
+					// der Kachelbreite; die min/max-Grenzen des alten
+					// Plugins kennt Swiper nicht
+					$options['slidesPerView'] = 'auto';
 					break;
 
 				case 'fixed':
-					$objTemplateJs->itemsVisible = ($objCarouFredSel->itemsVisible == '0' ? '' : 'visible: ' . $objCarouFredSel->itemsVisible);
-					$objTemplateCss->itemsVisible = $objCarouFredSel->itemsVisible;
-					break;
-
-				case 'min/max':
-					if (($objCarouFredSel->itemsVisibleMin != '0') && ($objCarouFredSel->itemsVisibleMax != '0'))
+					if ($objCarouFredSel->itemsVisible > 0)
 					{
-						$objTemplateJs->itemsVisible = 'visible: { min: ' . $objCarouFredSel->itemsVisibleMin . ', max: ' . $objCarouFredSel->itemsVisibleMax . ' }';
-					}
-					elseif ($objCarouFredSel->itemsVisibleMax != '0')
-					{
-						$objTemplateJs->itemsVisible = 'visible: { max: ' . $objCarouFredSel->itemsVisibleMax . ' }';
-					}
-					elseif ($objCarouFredSel->itemsVisibleMin != '0')
-					{
-						$objTemplateJs->itemsVisible = 'visible: { min: ' . $objCarouFredSel->itemsVisibleMin . ' }';
+						$options['slidesPerView'] = (int) $objCarouFredSel->itemsVisible;
+						$objTemplateCss->itemsVisible = $objCarouFredSel->itemsVisible;
 					}
 					break;
 			}
 
-			// carouFredSel-Option 'items.start': Standardwert ist '0'
+			// Startelement
 			switch ($objCarouFredSel->itemsStartSelect)
 			{
 				case 'number':
-					$objTemplateJs->itemsStart = ($objCarouFredSel->itemsStart == '0' ? '' : 'start: ' . $objCarouFredSel->itemsStart);
+					if ($objCarouFredSel->itemsStart > 0)
+					{
+						$options['initialSlide'] = (int) $objCarouFredSel->itemsStart;
+					}
 					break;
 
 				case 'random':
-					$objTemplateJs->itemsStart = 'start: "random"';
-					break;
-
-				case 'anchor':
-					$objTemplateJs->itemsStart = 'start: true';
+					// Wird im Initialisierer ausgewürfelt, weil die
+					// Kachelzahl erst im Browser feststeht
+					$objTemplateJs->randomStart = true;
 					break;
 			}
 		}
 
 		// --- Navigation
+		$autoButton = false;
+
 		if ($objCarouFredSel->useNavigation)
 		{
-			// carouFredSel-Option 'prev.key': Standardwert ist 'null'
-			if ($objCarouFredSel->prevKey != 'none')
+			// Pfeiltasten-Steuerung (die konkrete Tastenwahl des alten
+			// Plugins kennt Swiper nicht, es nutzt immer die Pfeiltasten)
+			if (($objCarouFredSel->prevKey != 'none' && $objCarouFredSel->prevKey != '')
+				|| ($objCarouFredSel->nextKey != 'none' && $objCarouFredSel->nextKey != '')
+				|| $objCarouFredSel->paginationKeys)
 			{
-				$objTemplateJs->prevKey = 'key: "' . $objCarouFredSel->prevKey . '"';
+				$options['keyboard'] = array('enabled' => true);
 			}
 
-			// carouFredSel-Option 'next.key': Standardwert ist 'null'
-			if ($objCarouFredSel->nextKey != 'none')
-			{
-				$objTemplateJs->nextKey = 'key: "' . $objCarouFredSel->nextKey . '"';
-			}
-
-			// carouFredSel-Option 'swipe.onTouch'
-			if ($objCarouFredSel->swipeOnTouch)
-			{
-				$objTemplateJs->swipeOnTouch = 'onTouch: true';
-			}
-
-			// carouFredSel-Option 'swipe.onMouse'
-			if ($objCarouFredSel->swipeOnMouse)
-			{
-				$objTemplateJs->swipeOnMouse = 'onMouse: true';
-			}
-
-			// carouFredSel-Option 'mousewheel'
+			// Mausrad-Steuerung
 			if ($objCarouFredSel->mousewheel)
 			{
-				$objTemplateJs->mousewheel = 'mousewheel: true';
+				$options['mousewheel'] = true;
 			}
 
+			// Vor-/Zurück-Pfeile: die eigenen Elemente der Templates werden
+			// an Swiper übergeben, damit die mitgelieferten Skins samt
+			// disabled-Zustand weiter funktionieren
 			if ($objCarouFredSel->navigation)
 			{
 				$objTemplateHtml->navigation =
 				$objTemplateJs->navigation =
 				$objTemplateCss->navigation = $objCarouFredSel->navigation;
 
-				// carouFredSel-Option 'auto.button': Standardwert ist 'null'; nur bei automatischem Abspielen
+				$options['navigation'] = array
+				(
+					'prevEl' => '#caroufredsel_prev_' . $objTemplateJs->id,
+					'nextEl' => '#caroufredsel_next_' . $objTemplateJs->id,
+					'disabledClass' => 'disabled',
+				);
+
+				// Play/Pause-Schalter nur bei automatischem Abspielen
 				if ($objCarouFredSel->autoPlay)
 				{
+					$autoButton = (bool) $objCarouFredSel->autoButton;
 					$objTemplateHtml->autoButton =
 					$objTemplateJs->autoButton =
 					$objTemplateCss->autoButton = $objCarouFredSel->autoButton;
 				}
 			}
 
+			// Seitenzahlen-Navigation im eigenen Container der Templates
 			if ($objCarouFredSel->pagination)
 			{
 				$objTemplateHtml->pagination =
 				$objTemplateJs->pagination =
 				$objTemplateCss->pagination = $objCarouFredSel->pagination;
 
-				// carouFredSel-Option 'keys'
-				if ($objCarouFredSel->paginationKeys)
-				{
-					$objTemplateJs->paginationKeys = 'keys: true';
-				}
+				$options['pagination'] = array
+				(
+					'el' => '#caroufredsel_pagi_' . $objTemplateJs->id,
+					'clickable' => true,
+					'bulletActiveClass' => 'selected',
+				);
 			}
 		}
 
-		// Typabhängige Vorgaben der Hintergrund-Slideshow: Sie füllt immer das
-		// gesamte Browserfenster, deshalb werden Größen- und Sichtbarkeits-
-		// einstellungen des Datensatzes überschrieben.
+		// Typabhängige Vorgaben der Hintergrund-Slideshow: Sie füllt immer
+		// das gesamte Browserfenster (CSS in caroufredsel.css), zeigt genau
+		// ein Bild und läuft endlos
 		if ($strCarouFredSelType == 'caroufredsel_background')
 		{
-			// Gesamtgröße
-			$objTemplateJs->width = 'width: $(window).width()';
-			$objTemplateJs->height = 'height: $(window).height()';
-			$objTemplateJs->align = 'align: false';
-
-			// Elementgröße
-			$objTemplateJs->itemsWidth = 'width: "variable"';
-			$objTemplateJs->itemsHeight = 'height: "variable"';
-
-			// Sichtbare Elemente
-			$objTemplateJs->itemsVisible = 'visible: 1';
+			$options['slidesPerView'] = 1;
+			$options['loop'] = true;
+			$objTemplateJs->background = true;
 		}
 
-		// JavaScript-Auslösemodus (Einstellung der Erweiterung, siehe README)
-		$objTemplateCss->triggerMode =
-		$objTemplateJs->triggerMode = Config::get('dk_cfsTriggerMode');
-
-		// Bildlader aktivieren
-		if (Config::get('dk_cfsImageLoader'))
+		// Vorschauleiste: Werte stammen aus applyThumbnailSettings() der
+		// Elemente/Module; die Leiste wird ein eigener Swiper, den das
+		// Thumbs-Modul mit dem Hauptkarussell koppelt
+		$thumbs = null;
+		if ($objTemplateJs->useThumbnails)
 		{
-			$objTemplateJs->useImageLoader = Config::get('dk_cfsImageLoader');
+			$thumbs = array
+			(
+				'el' => '#caroufredsel_thumbnails_' . $objTemplateJs->id,
+				'prevEl' => '#caroufredsel_thumbnails_prev_' . $objTemplateJs->id,
+				'nextEl' => '#caroufredsel_thumbnails_next_' . $objTemplateJs->id,
+				'vertical' => \in_array($objTemplateJs->thumbnailsPosition, array('left', 'right'), true),
+				'visible' => $objTemplateJs->thumbnailsVisible ? (int) $objTemplateJs->thumbnailsVisible : null,
+			);
 		}
 
-		// Verhalten bei Größenänderung des Browserfensters
-		if (Config::get('dk_cfsOnWindowResize'))
-		{
-			$objTemplateJs->onWindowResize = 'onWindowResize: "' . Config::get('dk_cfsOnWindowResize') . '"';
-		}
+		// Gesamtkonfiguration für den Initialisierer (caroufredsel.js)
+		$config = array
+		(
+			'id' => (string) $objTemplateJs->id,
+			'options' => $options,
+			'autoButton' => $autoButton,
+			'autoProgress' => $objTemplateJs->autoProgress ?: null,
+			'randomStart' => (bool) $objTemplateJs->randomStart,
+			'autoDelay' => ($objCarouFredSel->usePlay && $objCarouFredSel->autoPlay) ? (int) $objCarouFredSel->autoDelay : 0,
+			'sync' => $objTemplateJs->synchronise ? (string) $objTemplateJs->synchronise : null,
+			'background' => (bool) $objTemplateJs->background,
+			'thumbs' => $thumbs,
+		);
 
-		// CSS-Übergänge statt jQuery-Animationen
-		if (Config::get('dk_cfsTransition'))
-		{
-			$objTemplateJs->transition = 'transition: true';
-		}
-
-		// Debug-Modus des jQuery-Plugins
-		if (Config::get('dk_cfsDebug'))
-		{
-			$objTemplateJs->debug = 'debug: true';
-		}
+		$objTemplateJs->config = json_encode($config, JSON_UNESCAPED_SLASHES);
 
 		// Assets registrieren:
+
+		// ... Swiper-Bibliothek (contao-components/swiper) und Initialisierer
+		$GLOBALS['TL_CSS'][] = 'assets/swiper/css/swiper-bundle.min.css|static';
+		$GLOBALS['TL_JAVASCRIPT'][] = 'assets/swiper/js/swiper-bundle.min.js|static';
+		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/caroufredsel.js|static';
 
 		// ... globale CSS-Datei des Karussells
 		$GLOBALS['TL_CSS'][] = 'bundles/contaocaroufredsel/css/caroufredsel.css||static';
@@ -520,61 +433,9 @@ class CarouFredSel
 		// ... elementabhängiger CSS-Block im Seitenkopf
 		$GLOBALS['TL_HEAD'][] = $objTemplateCss->parse();
 
-		// ... das carouFredSel-Plugin selbst
-		$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/jquery.carouFredSel.min.js|static';
-
-		// ... elementabhängiger JavaScript-Aufruf; TL_JQUERY wird nur ausgegeben,
-		// wenn jQuery im Seitenlayout aktiviert ist (gilt für Contao 4 und 5)
-		$GLOBALS['TL_JQUERY'][] = $objTemplateJs->parse();
-
-		if ($objCarouFredSel->autoProgress == 'pie')
-		{
-			$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/jquery.carouFredSelHelper.js|static';
-		}
-
-		// Hilfsskripte:
-
-		// ... zusätzliche Easing-Methoden
-		if (str_starts_with((string) $objCarouFredSel->scrollEasing, 'ease'))
-		{
-			$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/jquery.easing.1.3.min.js|static';
-		}
-
-		// ... Touch-/Swipe-Unterstützung
-		if ($objCarouFredSel->swipeOnTouch || $objCarouFredSel->swipeOnMouse)
-		{
-			$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/jquery.touchSwipe.min.js|static';
-		}
-
-		// ... Mausrad-Unterstützung
-		if ($objCarouFredSel->mousewheel)
-		{
-			$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/jquery.mousewheel.min.js|static';
-		}
-
-		// ... Auslösemodus 'readyLoad' (Start je Element, sobald dessen Bilder geladen sind)
-		if (Config::get('dk_cfsTriggerMode') == 'readyLoad')
-		{
-			$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/jquery.readyLoad.js|static';
-		}
-
-		// ... Drosselung des Resize-Ereignisses (throttle/debounce)
-		if (Config::get('dk_cfsOnWindowResize'))
-		{
-			$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/jquery.ba-throttle-debounce.min.js|static';
-		}
-
-		// ... CSS-Übergänge statt jQuery-Animationen
-		if (Config::get('dk_cfsTransition'))
-		{
-			$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/jquery.transit.min.js|static';
-		}
-
-		// ... Bildlader
-		if (Config::get('dk_cfsImageLoader'))
-		{
-			$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaocaroufredsel/js/jquery.krioImageLoader-min.js|static';
-		}
+		// ... Initialisierungs-Aufruf am Seitenende (DOM steht dann);
+		// jQuery wird seit Version 3.0.0 nicht mehr benötigt
+		$GLOBALS['TL_BODY'][] = $objTemplateJs->parse();
 	}
 
 	/**
@@ -600,7 +461,7 @@ class CarouFredSel
 		}
 
 		// --- Abspielverhalten
-		if ($objCarouFredSel->usePlay && $objCarouFredSel->autoPlay && $objCarouFredSel->autoProgress != 'none')
+		if ($objCarouFredSel->usePlay && $objCarouFredSel->autoPlay && $objCarouFredSel->autoProgress != 'none' && $objCarouFredSel->autoProgress != '')
 		{
 			$objTemplateHtml->autoProgress = $objCarouFredSel->autoProgress;
 		}

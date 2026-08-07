@@ -386,12 +386,13 @@ trait GalleryTrait
 	 * in die HTML-, CSS- und JavaScript-Templates.
 	 *
 	 * Der Block war in der Contao-3-Fassung wortgleich im Galerie-Element und
-	 * im Galerie-Modul enthalten und ist hier zusammengeführt. Er setzt
-	 * Position, Ausrichtung sowie Breite/Höhe der Vorschauleiste und — falls
-	 * gesetzt — die zu synchronisierende Karussell-ID.
+	 * im Galerie-Modul enthalten und ist hier zusammengeführt. Das
+	 * JavaScript-Template erhält seit der Swiper-Umstellung nur noch
+	 * strukturierte Werte (Position, sichtbare Anzahl, Ziel-ID der
+	 * Synchronisierung); Breite und Höhe der Leiste laufen rein über CSS.
 	 *
 	 * @param FrontendTemplate $objTemplateCss Template für den CSS-Block
-	 * @param FrontendTemplate $objTemplateJs  Template für den JavaScript-Aufruf
+	 * @param FrontendTemplate $objTemplateJs  Template für den Initialisierungs-Aufruf
 	 *
 	 * @return void
 	 */
@@ -412,50 +413,23 @@ trait GalleryTrait
 
 			if ($this->dk_cfsThumbnailsVisibleSelect == 'fixed')
 			{
-				$objTemplateJs->thumbnailsVisible = $this->dk_cfsThumbnailsVisible;
+				$objTemplateJs->thumbnailsVisible = (int) $this->dk_cfsThumbnailsVisible;
 			}
 
 			$this->Template->thumbnailsPosition =
 			$objTemplateCss->thumbnailsPosition =
 			$objTemplateJs->thumbnailsPosition = $this->dk_cfsThumbnailsPosition;
 
-			if ($this->dk_cfsThumbnailsAlign != 'center')
-			{
-				$objTemplateJs->thumbnailsAlign = 'align: "' . $this->dk_cfsThumbnailsAlign . '"';
-			}
-
 			$thumbnailsWidth = StringUtil::deserialize($this->dk_cfsThumbnailsWidth, true);
-			if (isset($thumbnailsWidth['value']) && $thumbnailsWidth['value'] != '')
+			if (isset($thumbnailsWidth['value']) && $thumbnailsWidth['value'] != '' && in_array($thumbnailsWidth['unit'] ?? '', array('px', '%'), true))
 			{
-				switch ($thumbnailsWidth['unit'] ?? '')
-				{
-					case 'px':
-						$objTemplateCss->thumbnailsWidth = 'width: ' . $thumbnailsWidth['value'] . $thumbnailsWidth['unit'] . ';';
-						$objTemplateJs->thumbnailsWidth = 'width: ' . $thumbnailsWidth['value'];
-						break;
-
-					case '%':
-						$objTemplateCss->thumbnailsWidth = 'width: ' . $thumbnailsWidth['value'] . $thumbnailsWidth['unit'] . ';';
-						$objTemplateJs->thumbnailsWidth = sprintf('width: "%s%s"', $thumbnailsWidth['value'], $thumbnailsWidth['unit']);
-						break;
-				}
+				$objTemplateCss->thumbnailsWidth = 'width: ' . $thumbnailsWidth['value'] . $thumbnailsWidth['unit'] . ';';
 			}
 
 			$thumbnailsHeight = StringUtil::deserialize($this->dk_cfsThumbnailsHeight, true);
-			if (isset($thumbnailsHeight['value']) && $thumbnailsHeight['value'] != '')
+			if (isset($thumbnailsHeight['value']) && $thumbnailsHeight['value'] != '' && in_array($thumbnailsHeight['unit'] ?? '', array('px', '%'), true))
 			{
-				switch ($thumbnailsHeight['unit'] ?? '')
-				{
-					case 'px':
-						$objTemplateCss->thumbnailsHeight = 'height: ' . $thumbnailsHeight['value'] . $thumbnailsHeight['unit'] . ';';
-						$objTemplateJs->thumbnailsHeight = 'height: ' . $thumbnailsHeight['value'];
-						break;
-
-					case '%':
-						$objTemplateCss->thumbnailsHeight = 'height: ' . $thumbnailsHeight['value'] . $thumbnailsHeight['unit'] . ';';
-						$objTemplateJs->thumbnailsHeight = sprintf('height: "%s%s"', $thumbnailsHeight['value'], $thumbnailsHeight['unit']);
-						break;
-				}
+				$objTemplateCss->thumbnailsHeight = 'height: ' . $thumbnailsHeight['value'] . $thumbnailsHeight['unit'] . ';';
 			}
 		}
 
