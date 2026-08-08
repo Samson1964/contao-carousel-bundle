@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 3.1.1 (2026-08-08)
+
+* Fix: Die Bildgrößen-Auswahllisten in tl_content und tl_module riefen den Dienst unter seinem Contao-4-Aliasnamen `contao.image.image_sizes` auf, den es in Contao 5 nicht mehr gibt — das Öffnen von Modulen im Backend brach unter Contao 5.7 mit „You have requested a non-existent service" ab. Jetzt wird `contao.image.sizes` verwendet, der Name gilt in Contao 4.13 und 5 gleichermaßen.
+
 ## Version 3.1.0 (2026-08-07)
 
 * Change: Paket von `schachbulle/contao-caroufredsel-bundle` in `schachbulle/contao-carousel-bundle` umbenannt (samt GitHub-Repository, PHP-Namespace `Schachbulle\ContaoCarouselBundle` und Asset-Pfad `bundles/contaocarousel/`), weil die Anzeige-Engine seit Version 3.0.0 Swiper statt carouFredSel ist. Die internen Kennungen (Tabelle `tl_dk_caroufredsel`, `caroufredsel_*`-Typen, Template- und CSS-Namen) bleiben als Migrationsbrücke unverändert.

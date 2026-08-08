@@ -90,9 +90,14 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['dk_cfsImageSize'] = array
 	'label'				=> &$GLOBALS['TL_LANG']['tl_content']['dk_cfsImageSize'],
 	'exclude'			=> true,
 	'inputType'			=> 'imageSize',
+	// Liefert die im System hinterlegten Bildgrößen als Auswahlliste, beschränkt
+	// auf die Größen, die der angemeldete Benutzer sehen darf. Der Dienst heißt
+	// seit Contao 5 "contao.image.sizes"; unter Contao 4.13 ist
+	// "contao.image.image_sizes" nur noch ein Alias darauf, der alte Name führt
+	// in Contao 5 dagegen zu einem Fehler.
 	'options_callback'	=> static function ()
 	{
-		return System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance());
+		return System::getContainer()->get('contao.image.sizes')->getOptionsForUser(BackendUser::getInstance());
 	},
 	'reference'			=> &$GLOBALS['TL_LANG']['MSC'],
 	'eval'				=> array('rgxp' => 'natural', 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'),
@@ -142,9 +147,14 @@ $GLOBALS['TL_DCA']['tl_content']['fields']['dk_cfsThumbnailSize'] = array
 	'label'				=> &$GLOBALS['TL_LANG']['tl_content']['dk_cfsThumbnailSize'],
 	'exclude'			=> true,
 	'inputType'			=> 'imageSize',
+	// Liefert die im System hinterlegten Bildgrößen als Auswahlliste, beschränkt
+	// auf die Größen, die der angemeldete Benutzer sehen darf. Der Dienst heißt
+	// seit Contao 5 "contao.image.sizes"; unter Contao 4.13 ist
+	// "contao.image.image_sizes" nur noch ein Alias darauf, der alte Name führt
+	// in Contao 5 dagegen zu einem Fehler.
 	'options_callback'	=> static function ()
 	{
-		return System::getContainer()->get('contao.image.image_sizes')->getOptionsForUser(BackendUser::getInstance());
+		return System::getContainer()->get('contao.image.sizes')->getOptionsForUser(BackendUser::getInstance());
 	},
 	'reference'			=> &$GLOBALS['TL_LANG']['MSC'],
 	'eval'				=> array('rgxp' => 'natural', 'nospace' => true, 'helpwizard' => true, 'tl_class' => 'w50'),
