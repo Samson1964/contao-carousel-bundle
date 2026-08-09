@@ -16,12 +16,48 @@
 	max-width: 100%;
 }
 
-/* Bei slidesPerView "auto" richtet sich die Kachelbreite nach dem Inhalt;
-   bei fester Anzahl setzt Swiper die Breite als Inline-Stil und gewinnt */
 .caroufredsel .swiper-slide,
 .caroufredsel_thumbnails .swiper-slide {
 	box-sizing: border-box;
+}
+
+/* Nur bei slidesPerView "auto" (Klasse setzt der Initialisierer) richtet sich
+   die Kachelbreite nach dem Inhalt. Ein pauschales width:auto würde bei
+   fester Folienzahl Swipers Snap-Berechnung aushebeln — die Paginierung
+   verschwände dann hinter swiper-pagination-lock. */
+.caroufredsel_auto .swiper-slide {
 	width: auto;
+}
+
+.caroufredsel_thumbnails .swiper-slide {
+	width: auto;
+}
+
+/* Der Standard-Außenabstand von <figure> würde die Folien breiter als den
+   Container machen und die Snap-Berechnung verfälschen */
+.caroufredsel .swiper-slide .image_container,
+.caroufredsel_thumbnails .swiper-slide .image_container {
+	margin: 0;
+}
+
+/* Navigationspunkte: sichtbare, klickbare Punkte auch ohne Skin. Die
+   Ziffern in den Links sind für Skins gedacht, die Text einblenden wollen,
+   und werden hier versteckt. Der aktive Punkt trägt die Klasse "selected"
+   (bulletActiveClass), damit die mitgelieferten Skins weiter greifen. */
+.caroufredsel_pagi {
+	text-align: center;
+	padding: 6px 0;
+}
+
+.caroufredsel_pagi .swiper-pagination-bullet {
+	overflow: hidden;
+	text-indent: -999em;
+	cursor: pointer;
+	opacity: 0.3;
+}
+
+.caroufredsel_pagi .swiper-pagination-bullet.selected {
+	opacity: 1;
 }
 
 /* Räumt die Floats der seitlichen Vorschauleiste auf, damit der umgebende

@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 3.1.2 (2026-08-08)
+
+* Fix: Die Navigationspunkte (Paginierung) unter dem Karussell fehlten: Ein pauschales `width: auto` auf den Folien hebelte Swipers Snap-Berechnung aus, worauf Swiper die Paginierung als überflüssig ausblendete (`swiper-pagination-lock`). Die Regel gilt jetzt nur noch im Modus `slidesPerView: 'auto'` (Klasse `caroufredsel_auto`, setzt der Initialisierer).
+* Fix: Der Standard-Außenabstand von `<figure>` machte die Folien breiter als den Container und verfälschte die Snap-Berechnung; er wird jetzt im Karussell neutralisiert.
+* Fix: Die Punkte sind ohne Skin jetzt sichtbar gestaltet (verstecktes Zahlen-Label, aktiver Punkt über die Klasse `selected`) und klickbar; das frühere `href="#"` der Punkte-Links entfällt, damit die Seite beim Klick nicht zum Anker springt.
+
 ## Version 3.1.1 (2026-08-08)
 
 * Fix: Die Bildgrößen-Auswahllisten in tl_content und tl_module riefen den Dienst unter seinem Contao-4-Aliasnamen `contao.image.image_sizes` auf, den es in Contao 5 nicht mehr gibt — das Öffnen von Modulen im Backend brach unter Contao 5.7 mit „You have requested a non-existent service" ab. Jetzt wird `contao.image.sizes` verwendet, der Name gilt in Contao 4.13 und 5 gleichermaßen.

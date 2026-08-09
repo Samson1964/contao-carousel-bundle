@@ -124,11 +124,17 @@
 			}
 		}
 
+		// Kachelbreite nach Inhalt nur im auto-Modus (CSS-Klasse, siehe caroufredsel.css)
+		if (options.slidesPerView === 'auto') {
+			el.classList.add('caroufredsel_auto');
+		}
+
 		// Seitenzahlen als Links rendern, damit die mitgelieferten Skins
-		// (Selektor ".caroufredsel_pagi a") weiter greifen
+		// (Selektor ".caroufredsel_pagi a") weiter greifen. Bewusst ohne
+		// href, sonst spränge die Seite beim Klick zum Anker "#".
 		if (options.pagination) {
 			options.pagination.renderBullet = function (index, className) {
-				return '<a href="#" class="' + className + '"><span>' + (index + 1) + '</span></a>';
+				return '<a class="' + className + '"><span>' + (index + 1) + '</span></a>';
 			};
 		}
 
