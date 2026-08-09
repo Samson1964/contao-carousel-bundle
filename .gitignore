@@ -2,3 +2,6 @@
 /composer.lock
 /vendor/
 /.DAV
+
+# Eigene Arbeitsnotizen, gehören nicht ins Paket
+/TODO.md
